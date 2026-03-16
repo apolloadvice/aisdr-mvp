@@ -4,6 +4,7 @@ import '@/styles/globals.css';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/lib/theme/theme-provider';
 import { FontProvider } from '@/lib/theme/font-provider';
+import { Header } from '@/components/header';
 
 const sora = Sora({ subsets: ['latin'], variable: '--font-sora' });
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -35,7 +36,10 @@ export default function RootLayout({
     >
       <body className="antialiased">
         <ThemeProvider>
-          <FontProvider>{children}</FontProvider>
+          <FontProvider>
+            <Header />
+            {children}
+          </FontProvider>
         </ThemeProvider>
       </body>
     </html>

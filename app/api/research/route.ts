@@ -1,23 +1,30 @@
 import { NextRequest } from 'next/server';
-import { parseQueryToICP, generateCompanySummary } from '@/lib/services/ai';
+import { parseQueryToICP, rankCompanies, generateCompanySummary } from '@/lib/services/ai';
 import { findCompanies, researchCompany } from '@/lib/services/parallel';
-import { findContact } from '@/lib/services/apollo';
-import type { ResearchStreamEvent, CompanyResult } from '@/lib/types';
+import type { ResearchStreamEvent, CompanyResult, ICPCriteria } from '@/lib/types';
 
-export const maxDuration = 300; // 5 minute timeout
+export const maxDuration = 300;
+
+function buildLinkedInSearchUrl(name: string, companyName?: string): string {
+  const keywords = companyName ? `${name} ${companyName}` : name;
+  const q = encodeURIComponent(keywords);
+  return `https://www.linkedin.com/search/results/people/?keywords=${q}&origin=GLOBAL_SEARCH_HEADER`;
+}
 
 export async function POST(req: NextRequest) {
-  const { query } = await req.json();
+  const body = await req.json();
+  const { transcript, icp: providedIcp } = body as {
+    transcript?: string;
+    icp?: ICPCriteria;
+  };
 
-  if (!query || typeof query !== 'string') {
-    return Response.json({ error: 'Query is required' }, { status: 400 });
+  if (!transcript && !providedIcp) {
+    return Response.json({ error: 'Transcript or ICP is required' }, { status: 400 });
   }
 
-  // Check required API keys
   const missing: string[] = [];
   if (!process.env.ANTHROPIC_API_KEY) missing.push('ANTHROPIC_API_KEY');
   if (!process.env.PARALLEL_API_KEY) missing.push('PARALLEL_API_KEY');
-  // Apollo is optional — we'll skip contact enrichment if missing
 
   if (missing.length > 0) {
     return Response.json(
@@ -36,54 +43,71 @@ export async function POST(req: NextRequest) {
       }
 
       try {
-        // Step 1: Parse query into ICP
-        send({ type: 'status', message: 'Parsing your query into research criteria...' });
-        const icp = await parseQueryToICP(query);
-        send({ type: 'icp', data: icp });
+        // Step 1: Get ICP — either parse from transcript or use the provided one
+        let icp: ICPCriteria;
+        if (providedIcp) {
+          icp = providedIcp;
+          send({ type: 'icp', data: icp });
+        } else {
+          send({ type: 'status', message: 'Extracting ICP from transcript...' });
+          icp = await parseQueryToICP(transcript!);
+          send({ type: 'icp', data: icp });
+        }
 
-        // Step 2: Find companies via Parallel FindAll
+        // Step 2: Find companies
         send({
           type: 'status',
           message: `Searching for companies matching: ${icp.description}`
         });
         const allCompanies = await findCompanies(icp);
-        const companies = allCompanies.slice(0, 3);
 
-        if (companies.length === 0) {
+        if (allCompanies.length === 0) {
           send({ type: 'status', message: 'No companies found matching your criteria.' });
           send({ type: 'done', total: 0 });
-          controller.close();
           return;
         }
 
+        // Step 3: Rank
         send({
           type: 'status',
-          message: `Found ${companies.length} companies. Researching each one...`
+          message: `Found ${allCompanies.length} candidates. Ranking by ICP fit...`
+        });
+        const topNames = await rankCompanies(allCompanies, icp, 3);
+        const companies = allCompanies.filter((c) => topNames.includes(c.name));
+
+        send({
+          type: 'status',
+          message: `Researching top ${companies.length} companies...`
         });
 
-        // Step 3: Research all companies concurrently, stream each as it completes
+        // Step 4: Research concurrently
         let completedCount = 0;
 
         const processCompany = async (company: (typeof companies)[number]) => {
           try {
-            // Research and contact enrichment in parallel
-            const [research, contact] = await Promise.all([
-              researchCompany(company.name, icp),
-              process.env.APOLLO_API_KEY
-                ? findContact(company.name, icp.hiring_signals).catch(() => null)
-                : Promise.resolve(null)
-            ]);
+            const research = await researchCompany(company.name, icp, {
+              description: company.description,
+              match_reasoning: company.match_reasoning
+            });
 
-            // Generate summary with Claude
             const summary = await generateCompanySummary(
               {
                 name: company.name,
                 website: company.website,
+                description: company.description,
+                match_reasoning: company.match_reasoning,
                 research_text: research.research_text
               },
-              icp,
-              contact
+              icp
             );
+
+            const contacts = (summary.inferred_contacts || []).map((c) => ({
+              name: c.name,
+              title: c.title,
+              linkedin_url: buildLinkedInSearchUrl(c.name, company.name),
+              email: c.email || null,
+              is_decision_maker: c.is_decision_maker
+            }));
 
             const result: CompanyResult = {
               company_name: company.name,
@@ -91,9 +115,11 @@ export async function POST(req: NextRequest) {
               funding_stage: summary.funding_stage,
               amount_raised: summary.amount_raised,
               website: company.website || null,
+              linkedin_search_url: buildLinkedInSearchUrl(company.name),
               signals: summary.signals,
               match_reason: summary.match_reason,
-              target_contact: contact,
+              company_overview: summary.company_overview,
+              contacts,
               email_hook: summary.email_hook
             };
 
@@ -113,7 +139,6 @@ export async function POST(req: NextRequest) {
         };
 
         await Promise.all(companies.map(processCompany));
-
         send({ type: 'done', total: completedCount });
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error';

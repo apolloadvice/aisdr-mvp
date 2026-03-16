@@ -11,6 +11,8 @@ export interface FindAllCompany {
   name: string;
   website?: string;
   description?: string;
+  /** Raw match reasoning from FindAll's per-condition evaluation */
+  match_reasoning: string;
 }
 
 export async function findCompanies(
@@ -65,7 +67,7 @@ export async function findCompanies(
   const findallId = run.findall_id;
   let runStatus = run.status.status;
   let attempts = 0;
-  const maxAttempts = 60; // 5 minutes max
+  const maxAttempts = 60;
 
   while (runStatus !== 'completed' && runStatus !== 'failed' && attempts < maxAttempts) {
     await new Promise((r) => setTimeout(r, 5000));
@@ -85,22 +87,27 @@ export async function findCompanies(
     .map((c) => ({
       name: c.name,
       website: c.url || undefined,
-      description: c.description || undefined
+      description: c.description || undefined,
+      match_reasoning: c.output ? JSON.stringify(c.output) : ''
     }));
 }
 
 export async function researchCompany(
   companyName: string,
-  icp: ICPCriteria
+  icp: ICPCriteria,
+  findallContext?: { description?: string; match_reasoning?: string }
 ): Promise<{ research_text: string }> {
   const client = getClient();
 
-  const input = `Research the company "${companyName}" in depth. Find:
+  const contextBlock = findallContext?.description
+    ? `\nKnown context: ${findallContext.description}${findallContext.match_reasoning ? `\nMatch evaluation: ${findallContext.match_reasoning}` : ''}\n`
+    : '';
+
+  const input = `Research the company "${companyName}" in depth.${contextBlock}
+Find:
 1. Current job postings, especially related to: ${icp.hiring_signals.join(', ')}
 2. Recent funding rounds and total amount raised
-3. Recent news, product launches, or announcements
-4. Technology stack and infrastructure they use or build
-5. Key leadership team members
+3. Recent news or product announcements
 
 Focus on signals relevant to: ${icp.description}`;
 

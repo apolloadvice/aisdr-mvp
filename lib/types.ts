@@ -18,7 +18,9 @@ export interface CompanySignal {
 export interface TargetContact {
   name: string;
   title: string;
-  linkedin_url: string | null;
+  linkedin_url: string;
+  email: string | null;
+  is_decision_maker: boolean;
 }
 
 export interface CompanyResult {
@@ -27,9 +29,11 @@ export interface CompanyResult {
   funding_stage: string;
   amount_raised: string;
   website: string | null;
+  linkedin_search_url: string;
   signals: CompanySignal[];
   match_reason: string;
-  target_contact: TargetContact | null;
+  company_overview: string;
+  contacts: TargetContact[];
   email_hook: string;
 }
 
