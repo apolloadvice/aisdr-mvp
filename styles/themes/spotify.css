@@ -1,0 +1,81 @@
+/*
+ * SPOTIFY THEME — Electric Green on Black
+ * High-contrast dark theme inspired by Spotify's design language.
+ * Vibrant green accent on pure dark surfaces, rounded corners, bold energy.
+ */
+
+[data-theme='spotify'] body {
+  background-color: #121212;
+  background-image: none;
+}
+
+[data-theme='spotify'] {
+  /* Semantic tokens (oklch L C H) */
+  --accent-primary: 0.72 0.2 145;
+  --accent-secondary: 0.65 0.15 160;
+
+  --surface-primary: 0.15 0.005 0;
+  --surface-secondary: 0.19 0.005 0;
+  --surface-elevated: 0.24 0.005 0;
+  --surface-overlay: 0.08 0.003 0;
+
+  --border-default: 0.28 0.005 0;
+  --border-subtle: 0.22 0.003 0;
+  --border-strong: 0.38 0.008 0;
+
+  --text-primary: 0.95 0.005 0;
+  --text-secondary: 0.7 0.005 0;
+  --text-muted: 0.5 0.005 0;
+  --text-inverse: 0.1 0.005 0;
+
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow-md: 0 4px 12px oklch(0 0 0 / 0.5);
+  --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.6);
+
+  /* Card style tokens */
+  --card-radius: 8px;
+  --card-border-width: 0px;
+  --card-border-opacity: 0;
+  --card-shadow: var(--shadow-sm);
+  --card-hover-shadow: var(--shadow-md);
+  --card-hover-y: -2px;
+  --card-accent-bar-height: 0px;
+  --card-accent-bar-scale: 0;
+
+  /* shadcn bridge tokens */
+  --background: hsl(0 0% 7%);
+  --foreground: hsl(0 0% 95%);
+  --card: hsl(0 0% 11%);
+  --card-foreground: hsl(0 0% 95%);
+  --popover: hsl(0 0% 11%);
+  --popover-foreground: hsl(0 0% 95%);
+  --primary: hsl(141 73% 42%);
+  --primary-foreground: hsl(0 0% 0%);
+  --secondary: hsl(0 0% 16%);
+  --secondary-foreground: hsl(0 0% 85%);
+  --muted: hsl(0 0% 14%);
+  --muted-foreground: hsl(0 0% 50%);
+  --accent: hsl(0 0% 16%);
+  --accent-foreground: hsl(0 0% 95%);
+  --destructive: hsl(0 72% 52%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 18%);
+  --input: hsl(0 0% 18%);
+  --ring: hsl(141 73% 42%);
+  --radius: 0.5rem;
+
+  --chart-1: hsl(141 73% 42%);
+  --chart-2: hsl(160 55% 40%);
+  --chart-3: hsl(180 45% 38%);
+  --chart-4: hsl(120 40% 45%);
+  --chart-5: hsl(200 40% 42%);
+
+  --sidebar-background: hsl(0 0% 4%);
+  --sidebar-foreground: hsl(0 0% 50%);
+  --sidebar-primary: hsl(141 73% 42%);
+  --sidebar-primary-foreground: hsl(0 0% 0%);
+  --sidebar-accent: hsl(0 0% 10%);
+  --sidebar-accent-foreground: hsl(0 0% 95%);
+  --sidebar-border: hsl(0 0% 14%);
+  --sidebar-ring: hsl(141 73% 42%);
+}

@@ -6,6 +6,7 @@
 @import '../styles/themes/light.css';
 @import '../styles/themes/dark.css';
 @import '../styles/themes/claude.css';
+@import '../styles/themes/spotify.css';
 
 @custom-variant dark (&:is(.dark *));
 

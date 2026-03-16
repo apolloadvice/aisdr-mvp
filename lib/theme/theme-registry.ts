@@ -43,6 +43,17 @@ export const themes: ThemeDefinition[] = [
       primary: 'hsl(24, 70%, 55%)',
       accent: 'hsl(15, 50%, 52%)'
     }
+  },
+  {
+    id: 'spotify',
+    name: 'Spotify',
+    description: 'Electric green on black',
+    isDark: true,
+    previewColors: {
+      bg: '#121212',
+      primary: 'hsl(141, 73%, 42%)',
+      accent: 'hsl(160, 55%, 40%)'
+    }
   }
 ];
 
