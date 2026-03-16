@@ -1,5 +1,5 @@
-import { ResearchDashboard } from '@/components/research/research-dashboard.client';
+import { Landing } from '@/components/landing/landing';
 
 export default function Home() {
-  return <ResearchDashboard />;
+  return <Landing />;
 }
