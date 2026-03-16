@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Pencil, Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { TagEditor } from './tag-editor';
-import type { ICPCriteria, ResearchStreamEvent } from '@/lib/types';
+import { parseICP } from '@/lib/api';
+import type { ICPCriteria } from '@/lib/types';
 
 const EXAMPLE_PROMPTS = [
   'AI startups that raised $50M+ and are hiring for MLOps or GPU infrastructure roles',
@@ -41,51 +42,9 @@ export function ReviewStep({
     setError(null);
 
     try {
-      const response = await fetch('/api/research', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: aiPrompt.trim() })
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to generate ICP');
-      }
-
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response stream');
-
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          try {
-            const event: ResearchStreamEvent = JSON.parse(line.slice(6));
-            if (event.type === 'icp') {
-              setIcp(event.data);
-              setAiPrompt('');
-              reader.cancel();
-              return;
-            }
-            if (event.type === 'error') throw new Error(event.message);
-          } catch (e) {
-            if (e instanceof Error && e.message !== 'Failed to parse ICP from query') {
-              // skip SSE parse errors
-            } else {
-              throw e;
-            }
-          }
-        }
-      }
+      const data = await parseICP(aiPrompt.trim());
+      setIcp(data);
+      setAiPrompt('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate ICP');
     } finally {
@@ -98,10 +57,12 @@ export function ReviewStep({
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold tracking-tight">Review ICP</h2>
-          <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-            <Pencil className="size-3" />
-            Click any field to edit
-          </div>
+          {icp.description.trim() && (
+            <span className="text-muted-foreground/60 text-xs">
+              <kbd className="bg-muted rounded px-1 py-0.5 font-mono text-xs">Cmd+Enter</kbd> to run
+              research
+            </span>
+          )}
         </div>
         <p className="text-muted-foreground mt-1 text-sm">
           Edit the fields below, or use AI to generate from a prompt.

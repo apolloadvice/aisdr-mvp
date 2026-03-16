@@ -8,6 +8,11 @@ export interface ICPCriteria {
   company_examples: string[];
 }
 
+export interface SourceLink {
+  title: string;
+  url: string;
+}
+
 export interface CompanySignal {
   type: 'job_posting' | 'news' | 'funding' | 'product_launch' | 'other';
   title: string;
@@ -35,12 +40,24 @@ export interface CompanyResult {
   company_overview: string;
   contacts: TargetContact[];
   email_hook: string;
+  /** Raw sources grouped by category for linking in the UI */
+  sources: {
+    jobs: SourceLink[];
+    funding: SourceLink[];
+    news: SourceLink[];
+  };
 }
 
 export interface ResearchResponse {
   query: string;
   icp: ICPCriteria;
   results: CompanyResult[];
+}
+
+export interface ComposeEmailParams {
+  company: CompanyResult;
+  contact: TargetContact;
+  initialBody: string;
 }
 
 export type ResearchStreamEvent =

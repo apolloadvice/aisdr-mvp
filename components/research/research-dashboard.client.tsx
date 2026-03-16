@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { TranscriptStep } from './transcript-step';
 import { ReviewStep } from './review-step';
 import { ResultsStep } from './results-step';
 import { BottomNav } from './bottom-nav';
-import type { CompanyResult, ICPCriteria, ResearchStreamEvent } from '@/lib/types';
+import { EmailEditorPanel } from './email-editor-panel.client';
+import { parseICP, runResearch } from '@/lib/api';
+import type { CompanyResult, ComposeEmailParams, ICPCriteria } from '@/lib/types';
 
 type Step = 'input' | 'review' | 'results';
 
@@ -19,40 +21,6 @@ const EMPTY_ICP: ICPCriteria = {
   company_examples: []
 };
 
-async function readSSEStream(
-  response: Response,
-  onEvent: (event: ResearchStreamEvent) => void | 'stop'
-) {
-  const reader = response.body?.getReader();
-  if (!reader) throw new Error('No response stream');
-
-  const decoder = new TextDecoder();
-  let buffer = '';
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split('\n\n');
-    buffer = lines.pop() || '';
-
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-      try {
-        const event: ResearchStreamEvent = JSON.parse(line.slice(6));
-        const result = onEvent(event);
-        if (result === 'stop') {
-          reader.cancel();
-          return;
-        }
-      } catch {
-        // skip malformed events
-      }
-    }
-  }
-}
-
 export function ResearchDashboard() {
   const [step, setStep] = useState<Step>('input');
   const [transcript, setTranscript] = useState('');
@@ -62,6 +30,7 @@ export function ResearchDashboard() {
   const [icp, setIcp] = useState<ICPCriteria | null>(null);
   const [results, setResults] = useState<CompanyResult[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [composeParams, setComposeParams] = useState<ComposeEmailParams | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const handleExtractICP = useCallback(async () => {
@@ -71,25 +40,9 @@ export function ResearchDashboard() {
     setError(null);
 
     try {
-      const response = await fetch('/api/research', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: transcript.trim() })
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || `Request failed: ${response.status}`);
-      }
-
-      await readSSEStream(response, (event) => {
-        if (event.type === 'icp') {
-          setIcp(event.data);
-          setStep('review');
-          return 'stop';
-        }
-        if (event.type === 'error') throw new Error(event.message);
-      });
+      const data = await parseICP(transcript.trim());
+      setIcp(data);
+      setStep('review');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to extract ICP');
     } finally {
@@ -109,34 +62,23 @@ export function ResearchDashboard() {
     abortRef.current = new AbortController();
 
     try {
-      const response = await fetch('/api/research', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ icp }),
-        signal: abortRef.current.signal
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || `Request failed: ${response.status}`);
-      }
-
-      await readSSEStream(response, (event) => {
-        switch (event.type) {
-          case 'status':
-            setStatusMessage(event.message);
-            break;
-          case 'company':
-            setResults((prev) => [...prev, event.data]);
-            break;
-          case 'done':
-            setStatusMessage(`Research complete. Found ${event.total} companies.`);
-            break;
-          case 'error':
-            setError(event.message);
-            break;
-        }
-      });
+      await runResearch(
+        icp,
+        (event) => {
+          switch (event.type) {
+            case 'status':
+              setStatusMessage(event.message);
+              break;
+            case 'company':
+              setResults((prev) => [...prev, event.data]);
+              break;
+            case 'done':
+              setStatusMessage(`Research complete. Found ${event.total} companies.`);
+              break;
+          }
+        },
+        abortRef.current.signal
+      );
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return;
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -153,32 +95,58 @@ export function ResearchDashboard() {
     setStatusMessage('');
   };
 
+  // Cmd+Enter / Ctrl+Enter to advance
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        if (step === 'input' && transcript.trim() && !isExtracting) {
+          handleExtractICP();
+        } else if (step === 'review' && icp?.description?.trim() && !isLoading) {
+          handleRunResearch();
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [step, transcript, icp, isExtracting, isLoading, handleExtractICP, handleRunResearch]);
+
   return (
     <div className="bg-background min-h-screen">
       <main className="mx-auto max-w-7xl px-6 pt-10 pb-24">
-        {step === 'input' && (
-          <TranscriptStep
-            transcript={transcript}
-            setTranscript={setTranscript}
-            isExtracting={isExtracting}
-            error={error}
-          />
-        )}
+        <div className="animate-in fade-in duration-300" key={step}>
+          {step === 'input' && (
+            <TranscriptStep
+              transcript={transcript}
+              setTranscript={setTranscript}
+              isExtracting={isExtracting}
+              error={error}
+            />
+          )}
 
-        {step === 'review' && icp && (
-          <ReviewStep icp={icp} setIcp={setIcp} error={error} setError={setError} />
-        )}
+          {step === 'review' && icp && (
+            <ReviewStep icp={icp} setIcp={setIcp} error={error} setError={setError} />
+          )}
 
-        {step === 'results' && (
-          <ResultsStep
-            icp={icp}
-            results={results}
-            isLoading={isLoading}
-            statusMessage={statusMessage}
-            error={error}
-          />
-        )}
+          {step === 'results' && (
+            <ResultsStep
+              icp={icp}
+              results={results}
+              isLoading={isLoading}
+              statusMessage={statusMessage}
+              error={error}
+              onComposeEmail={setComposeParams}
+              onEditCriteria={() => setStep('review')}
+            />
+          )}
+        </div>
       </main>
+
+      <EmailEditorPanel
+        open={composeParams !== null}
+        params={composeParams}
+        onClose={() => setComposeParams(null)}
+      />
 
       <BottomNav
         step={step}
