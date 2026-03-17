@@ -51,12 +51,6 @@ export interface CompanyResult {
   };
 }
 
-export interface ResearchResponse {
-  query: string;
-  icp: ICPCriteria;
-  results: CompanyResult[];
-}
-
 export interface ComposeEmailParams {
   company: CompanyResult;
   contact: TargetContact;

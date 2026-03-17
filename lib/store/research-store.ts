@@ -379,11 +379,9 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
       const orgIds = companiesWithOrgIds.map((c) => c.apollo_org_id);
       const results = await searchPeople(orgIds, icp, companiesWithOrgIds);
 
-      const peopleResults: Record<string, ApolloPersonPreview[]> = {};
-      for (const result of results) {
-        peopleResults[result.company_name] = result.ranked_people;
-      }
-
+      const peopleResults = Object.fromEntries(
+        results.map((r) => [r.company_name, r.ranked_people])
+      );
       set({ peopleResults, isPeopleSearching: false });
     } catch (err) {
       console.error('People search failed:', err);

@@ -58,8 +58,7 @@ Describe what roles/titles you'll prioritize and why. Explain the decision-maker
 ### 3. Email Approach
 Describe how you'll personalize outreach. What types of signals will you reference? What hooks will make emails stand out?
 
-End with:
-"**Ready to proceed?** Say 'go' to start, or tell me what you'd like to adjust."
+End by asking if the user wants to adjust anything. Do NOT tell them to say "go" or "proceed" — the user has a separate button for that.
 
 Do NOT use bullet points excessively. Write in short, confident paragraphs. Sound like a strategist briefing a sales leader, not a generic AI.`;
 }
@@ -76,8 +75,7 @@ Based on the conversation so far, respond to the user's feedback. If they reques
 
 If the user asked you to look at a website or document, search for it, summarize what you found, and explain how you'll use it in the research.
 
-End with:
-"**I've updated the strategy.** Say 'go' to start, or let me know if you'd like more changes."
+End by summarizing what changed and asking if the user wants further adjustments. Do NOT tell them to say "go" or "proceed" — the user has a separate button for that.
 
 Keep it concise. Sound like a strategist, not a generic AI.`;
 }

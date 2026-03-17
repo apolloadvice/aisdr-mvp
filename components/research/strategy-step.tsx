@@ -220,28 +220,10 @@ export function StrategyStep() {
   const approveStrategy = useResearchStore((s) => s.approveStrategy);
 
   const [input, setInput] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isNearBottomRef = useRef(true);
 
   const hasMessages = strategyMessages.length > 0;
   const lastMessage = strategyMessages[strategyMessages.length - 1];
   const canApprove = hasMessages && !isStrategizing && lastMessage?.role === 'assistant';
-
-  // Track whether user is near the bottom of the scroll container
-  const handleScroll = useCallback(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const threshold = 80;
-    isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-  }, []);
-
-  // Only auto-scroll if user is already near the bottom
-  useEffect(() => {
-    if (isNearBottomRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [strategyMessages]);
 
   const handleSend = useCallback(() => {
     if (!input.trim() || isStrategizing) return;
@@ -274,11 +256,7 @@ export function StrategyStep() {
       {/* Chat card */}
       <div className="border-border bg-card mt-4 flex flex-col overflow-hidden rounded-xl border">
         {/* Messages — scrollable, tall */}
-        <div
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-          className="max-h-[60vh] min-h-[400px] space-y-6 overflow-y-auto p-4"
-        >
+        <div className="max-h-[60vh] min-h-[400px] space-y-6 overflow-y-auto p-4">
           {strategyMessages.map((msg, i) => (
             <div key={i} className={msg.role === 'user' ? 'flex justify-end' : ''}>
               {msg.role === 'assistant' ? (
@@ -314,8 +292,6 @@ export function StrategyStep() {
               {statusMessage}
             </div>
           )}
-
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Input + actions — pinned to bottom */}

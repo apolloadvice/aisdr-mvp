@@ -28,17 +28,5 @@ export const serviceConfig = {
   apolloPerPage: 25,
 
   /** Apollo API base URL */
-  apolloBaseUrl: 'https://api.apollo.io/api/v1',
-
-  /** Parallel FindAll: max companies to return */
-  findAllLimit: 5,
-
-  /** Parallel FindAll: generator tier */
-  findAllGenerator: 'preview' as const,
-
-  /** Parallel FindAll: poll interval in ms */
-  findAllPollInterval: 5000,
-
-  /** Parallel FindAll: max poll attempts */
-  findAllMaxAttempts: 60
+  apolloBaseUrl: 'https://api.apollo.io/api/v1'
 } as const;
