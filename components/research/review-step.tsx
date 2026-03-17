@@ -5,7 +5,6 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
 import { TagEditor } from './tag-editor';
 import { parseICP } from '@/lib/api';
 import type { ICPCriteria } from '@/lib/types';
@@ -53,49 +52,17 @@ export function ReviewStep({
   }, [aiPrompt, isGenerating, setIcp, setError]);
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <>
       <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold tracking-tight">Review ICP</h2>
-          {icp.description.trim() && (
-            <span className="text-muted-foreground/60 text-xs">
-              <kbd className="bg-muted rounded px-1 py-0.5 font-mono text-xs">Cmd+Enter</kbd> to run
-              research
-            </span>
-          )}
-        </div>
+        <h2 className="text-xl font-semibold tracking-tight">Review ICP</h2>
         <p className="text-muted-foreground mt-1 text-sm">
           Edit the fields below, or use AI to generate from a prompt.
         </p>
       </div>
 
-      {/* AI generate bar */}
-      <div className="mb-4 flex gap-2">
-        <Input
-          placeholder="Describe your ICP in plain English and let AI fill the fields..."
-          value={aiPrompt}
-          onChange={(e) => setAiPrompt(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleGenerateFromPrompt();
-          }}
-          disabled={isGenerating}
-          className="flex-1 text-sm"
-        />
-        <Button
-          onClick={handleGenerateFromPrompt}
-          disabled={isGenerating || !aiPrompt.trim()}
-          className="shrink-0"
-        >
-          {isGenerating ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <Sparkles className="size-3.5" />
-          )}
-          {isGenerating ? 'Generating...' : 'Generate'}
-        </Button>
-      </div>
+      {error && <p className="text-destructive mb-4 text-sm">{error}</p>}
 
-      {/* Example prompts */}
+      {/* Example prompts — show when ICP is empty */}
       {!icp.description && !aiPrompt && (
         <div className="mb-4 flex flex-wrap gap-1.5">
           {EXAMPLE_PROMPTS.map((ep, i) => (
@@ -110,8 +77,40 @@ export function ReviewStep({
         </div>
       )}
 
-      <Card>
-        <CardContent className="space-y-5 pt-6">
+      <div className="border-border bg-card overflow-hidden rounded-xl border">
+        {/* Header — AI generate bar */}
+        <div className="bg-muted/50 border-border flex items-center gap-2 border-b px-4 py-2.5">
+          <Sparkles className="text-muted-foreground size-3.5 shrink-0" />
+          <Input
+            placeholder="Describe your ICP in plain English..."
+            value={aiPrompt}
+            onChange={(e) => setAiPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleGenerateFromPrompt();
+            }}
+            disabled={isGenerating}
+            className="h-7 flex-1 border-none bg-transparent text-sm shadow-none focus-visible:ring-0"
+          />
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleGenerateFromPrompt}
+            disabled={isGenerating || !aiPrompt.trim()}
+            className="h-7 shrink-0 text-xs"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="size-3 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              'Generate'
+            )}
+          </Button>
+        </div>
+
+        {/* ICP fields */}
+        <div className="space-y-5 p-4">
           <div>
             <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
               ICP Description
@@ -171,10 +170,22 @@ export function ReviewStep({
             label="Example Companies"
             color="green"
           />
-        </CardContent>
-      </Card>
+        </div>
 
-      {error && <p className="text-destructive mt-4 text-sm">{error}</p>}
-    </div>
+        {/* Footer */}
+        <div className="border-border border-t px-4 py-2.5">
+          {icp.description.trim() ? (
+            <span className="text-muted-foreground/60 text-xs">
+              <kbd className="bg-muted rounded px-1 py-0.5 font-mono text-xs">Cmd+Enter</kbd> to
+              find companies
+            </span>
+          ) : (
+            <span className="text-muted-foreground text-xs">
+              Fill in the ICP description to continue
+            </span>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
