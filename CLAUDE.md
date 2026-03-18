@@ -11,7 +11,8 @@ CLAUDE.md                          ← You are here
 docs/
 ├── ARCHITECTURE.md                ← Domain layers, data flow, service interfaces
 ├── PRODUCT.md                     ← User flows, business domain, current limitations
-└── CONVENTIONS.md                 ← SSR boundary, TypeScript, Tailwind, component rules
+├── CONVENTIONS.md                 ← SSR boundary, TypeScript, Tailwind, component rules
+└── CODE-CLEANUP.md                ← Post-iteration cleanup checklist
 .claude/skills/
 ├── research-pipeline/skill.md     ← Pipeline deep-dive: types, APIs, config, Apollo integration
 └── theme-framework/skill.md       ← Token system, adding themes, font system

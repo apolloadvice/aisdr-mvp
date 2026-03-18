@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Building2, ExternalLink, X, Plus, Search } from 'lucide-react';
+import { Building2, ExternalLink, X, Plus } from 'lucide-react';
 import { CompanyLogoWithFallback } from '@/components/company-logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { LoadingStatus } from './loading-status';
 import { useResearchStore } from '@/lib/store/research-store';
 
 function Checkbox({ checked, className }: { checked: boolean; className?: string }) {
@@ -25,29 +26,6 @@ function Checkbox({ checked, className }: { checked: boolean; className?: string
           />
         </svg>
       )}
-    </div>
-  );
-}
-
-function LoadingStatus({ statusMessage }: { statusMessage: string }) {
-  return (
-    <div className="bg-card border-border mb-6 overflow-hidden rounded-lg border">
-      <div className="relative px-4 py-4">
-        <div className="bg-muted absolute inset-x-0 bottom-0 h-0.5">
-          <div className="bg-primary h-full w-1/3 animate-[shimmer_2s_ease-in-out_infinite] rounded-full" />
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 flex size-8 items-center justify-center rounded-lg">
-            <Search className="text-primary size-4 animate-pulse" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">{statusMessage || 'Searching...'}</p>
-            <p className="text-muted-foreground mt-0.5 text-xs">
-              Finding companies that match your ICP
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -112,7 +90,12 @@ export function ConfirmStep() {
 
       {error && <p className="text-destructive mb-4 text-sm">{error}</p>}
 
-      {isDiscovering && <LoadingStatus statusMessage={statusMessage} />}
+      {isDiscovering && (
+        <LoadingStatus
+          statusMessage={statusMessage}
+          subtitle="Finding companies that match your ICP"
+        />
+      )}
 
       <div className="border-border bg-card overflow-hidden rounded-xl border">
         {/* Header */}

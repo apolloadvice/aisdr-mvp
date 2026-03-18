@@ -105,7 +105,7 @@ function IcpPanel() {
   };
 
   return (
-    <div className="border-border bg-card shrink-0 overflow-hidden rounded-xl border">
+    <div className="border-border bg-card overflow-hidden rounded-xl border">
       <div className="bg-muted/50 border-border flex items-center justify-between border-b px-4 py-2.5">
         <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
           Current ICP
@@ -121,7 +121,7 @@ function IcpPanel() {
           <Textarea
             value={icp.description}
             onChange={(e) => updateIcp('description', e.target.value)}
-            className="min-h-[60px] resize-none text-sm"
+            className="min-h-15 resize-none text-sm"
           />
         </div>
 
@@ -240,7 +240,7 @@ export function StrategyStep() {
 
   return (
     <div className="flex flex-col">
-      {/* Header — fixed */}
+      {/* Header */}
       <div className="mb-4 shrink-0">
         <h2 className="text-xl font-semibold tracking-tight">Research Strategy</h2>
         <p className="text-muted-foreground mt-1 text-sm">
@@ -250,83 +250,90 @@ export function StrategyStep() {
 
       {error && <p className="text-destructive mb-3 shrink-0 text-sm">{error}</p>}
 
-      {/* ICP Panel — fixed at top */}
-      {icp && <IcpPanel />}
-
-      {/* Chat card */}
-      <div className="border-border bg-card mt-4 flex flex-col overflow-hidden rounded-xl border">
-        {/* Messages — scrollable, tall */}
-        <div className="max-h-[60vh] min-h-[400px] space-y-6 overflow-y-auto p-4">
-          {strategyMessages.map((msg, i) => (
-            <div key={i} className={msg.role === 'user' ? 'flex justify-end' : ''}>
-              {msg.role === 'assistant' ? (
-                <div className="bg-muted/50 max-w-[60%] rounded-2xl rounded-bl-md px-4 py-3">
-                  <div className="prose prose-sm dark:prose-invert max-w-none text-sm leading-6">
-                    <ReactMarkdown
-                      components={{
-                        p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>
-                      }}
-                    >
-                      {msg.content.replace(/\n/g, '  \n')}
-                    </ReactMarkdown>
-                  </div>
+      {/* Side-by-side: ICP drives height, chat matches it */}
+      <div className="relative flex gap-4">
+        {/* Chat — pinned to ICP height via absolute positioning */}
+        <div className="absolute top-0 bottom-0 left-0 w-80">
+          <div className="border-border bg-card flex h-full flex-col overflow-hidden rounded-xl border">
+            <div className="bg-muted/50 border-border flex shrink-0 items-center justify-between border-b px-4 py-2.5">
+              <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                Strategy Chat
+              </span>
+            </div>
+            {/* Messages — scrollable */}
+            <div className="flex-1 space-y-4 overflow-y-auto p-4">
+              {strategyMessages.map((msg, i) => (
+                <div key={i} className={msg.role === 'user' ? 'flex justify-end' : ''}>
+                  {msg.role === 'assistant' ? (
+                    <div className="bg-muted/50 rounded-xl rounded-bl-md px-3 py-2">
+                      <div className="prose prose-sm dark:prose-invert max-w-none text-xs leading-5">
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>
+                          }}
+                        >
+                          {msg.content.replace(/\n/g, '  \n')}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-primary text-primary-foreground rounded-xl rounded-br-md px-3 py-2 text-xs whitespace-pre-wrap">
+                      {msg.content}
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="bg-primary text-primary-foreground max-w-[60%] rounded-2xl rounded-br-md px-3 py-2 text-sm whitespace-pre-wrap">
-                  {msg.content}
+              ))}
+
+              {isStrategizing && !hasMessages && (
+                <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                  <Loader2 className="size-3 animate-spin" />
+                  Analyzing your ICP...
+                </div>
+              )}
+
+              {isStrategizing && statusMessage && (
+                <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                  <Search className="size-3 animate-pulse" />
+                  {statusMessage}
                 </div>
               )}
             </div>
-          ))}
 
-          {isStrategizing && !hasMessages && (
-            <div className="text-muted-foreground flex items-center gap-2 text-sm">
-              <Loader2 className="size-3.5 animate-spin" />
-              Analyzing your ICP and building a strategy...
+            {/* Input — pinned to bottom */}
+            <div className="border-border shrink-0 border-t px-4 py-3">
+              <div className="flex items-end gap-2">
+                <Textarea
+                  placeholder="Request changes..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isStrategizing}
+                  className="max-h-24 min-h-9 flex-1 resize-none text-xs"
+                  rows={1}
+                />
+                <Button
+                  size="icon"
+                  label="Send"
+                  onClick={handleSend}
+                  disabled={isStrategizing || !input.trim()}
+                >
+                  {isStrategizing ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Send className="size-4" />
+                  )}
+                </Button>
+              </div>
             </div>
-          )}
-
-          {isStrategizing && statusMessage && (
-            <div className="text-muted-foreground flex items-center gap-2 text-sm">
-              <Search className="size-3 animate-pulse" />
-              {statusMessage}
-            </div>
-          )}
-        </div>
-
-        {/* Input + actions — pinned to bottom */}
-        <div className="border-border shrink-0 border-t px-4 py-3">
-          <div className="flex items-end gap-2">
-            <Textarea
-              placeholder="Request changes or provide a URL to scrape..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isStrategizing}
-              className="max-h-32 min-h-[44px] flex-1 resize-none text-sm"
-              rows={1}
-            />
-            <Button
-              variant="ghost"
-              onClick={handleSend}
-              disabled={isStrategizing || !input.trim()}
-              className="shrink-0"
-            >
-              {isStrategizing ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Send className="size-4" />
-              )}
-              Send
-            </Button>
-            {canApprove && (
-              <Button onClick={approveStrategy} className="shrink-0">
-                <Check className="size-4" />
-                Approve &amp; Start
-              </Button>
-            )}
           </div>
         </div>
+
+        {/* ICP Panel — right, drives the row height */}
+        {icp && (
+          <div className="min-w-0 flex-1" style={{ marginLeft: '21rem' }}>
+            <IcpPanel />
+          </div>
+        )}
       </div>
     </div>
   );
