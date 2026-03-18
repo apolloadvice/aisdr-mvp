@@ -394,14 +394,10 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
       });
     } finally {
       set({ isResearching: false, researchingCompany: null, abortController: null });
-      // Auto-save and mark completed after research
-      if (get().sessionId) {
-        const { sessionId } = get();
-        if (sessionId) {
-          updateSession(sessionId, { status: 'completed' } as Partial<
-            import('@/lib/types').ResearchSession
-          >).catch(() => {});
-        }
+      // Mark session completed after research
+      const { sessionId } = get();
+      if (sessionId) {
+        updateSession(sessionId, { status: 'completed' }).catch(() => {});
       }
       get().saveSession();
     }
@@ -535,7 +531,7 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
         selected_companies: selectedCompanies,
         results,
         people_results: peopleResults
-      } as Parameters<typeof updateSession>[1]);
+      });
       set({ lastSavedAt: new Date().toISOString() });
     } catch (err) {
       console.error('Failed to save session:', err);

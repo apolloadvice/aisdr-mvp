@@ -26,8 +26,9 @@ import { Textarea } from '@/components/ui/textarea';
 import type { ComposeEmailParams, GeneratedEmail } from '@/lib/types';
 import { generateEmailSequence, sendEmail as sendEmailApi, getGmailStatus } from '@/lib/api';
 import { useProfileStore } from '@/lib/store/profile-store';
+import { useResearchStore } from '@/lib/store/research-store';
 
-const STEP_LABELS = ['Initial Email', 'Follow-up 1', 'Follow-up 2'] as const;
+const STEP_LABELS = ['Email 1', 'Email 2', 'Email 3'] as const;
 
 export function EmailEditorPanel({
   open,
@@ -179,13 +180,15 @@ export function EmailEditorPanel({
     if (!params || !toEmail) return;
     setSending(true);
     setSendResult(null);
+    const sessionId = useResearchStore.getState().sessionId;
     try {
       const result = await sendEmailApi({
         to: toEmail,
         subject,
         body,
         companyName: params.company.company_name,
-        contactName: params.contact.name
+        contactName: params.contact.name,
+        ...(sessionId ? { sessionId } : {})
       });
       if (result.success) {
         setSendResult({ type: 'success', message: 'Email sent successfully' });
@@ -232,6 +235,7 @@ export function EmailEditorPanel({
               </button>
             ))}
           </div>
+          <p className="text-muted-foreground text-[11px]">Each email is sent individually</p>
 
           <div className="space-y-1.5">
             <label className="text-muted-foreground text-xs font-medium">To</label>

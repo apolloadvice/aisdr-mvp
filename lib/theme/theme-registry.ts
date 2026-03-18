@@ -19,7 +19,7 @@ export const themes: ThemeDefinition[] = [
     isDark: false,
     previewColors: {
       bg: '#f7f7f5',
-      primary: '#FECF40',
+      primary: '#e8b820',
       secondary: '#7a7774',
       tertiary: 'hsl(220, 50%, 48%)'
     }

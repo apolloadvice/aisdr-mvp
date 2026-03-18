@@ -30,12 +30,6 @@ const STEPS = [
   }
 ];
 
-const STATS = [
-  { value: '10x', label: 'Faster than manual research' },
-  { value: '73%', label: 'Open rate on signal-based emails' },
-  { value: '0', label: 'Sales hires needed' }
-];
-
 export function Landing() {
   const openAuthModal = useAuthStore((s) => s.openAuthModal);
   const router = useRouter();
@@ -72,7 +66,7 @@ export function Landing() {
 
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col px-6">
         {/* ── Hero + Stats ── */}
-        <section className="flex flex-1 flex-col justify-center pb-8 sm:pb-12">
+        <section className="flex flex-1 flex-col justify-center pt-16 pb-8 sm:pt-24 sm:pb-12">
           <div
             className="animate-in fade-in fill-mode-both duration-500"
             style={{ animationDelay: '0ms' }}
@@ -108,21 +102,6 @@ export function Landing() {
               <ArrowRight className="size-4" />
             </Button>
             <span className="text-muted-foreground text-xs">No credit card required</span>
-          </div>
-
-          {/* Stats row */}
-          <div
-            className="animate-in fade-in fill-mode-both border-border mt-10 grid grid-cols-3 border-t pt-8 duration-700 sm:mt-14 sm:pt-10"
-            style={{ animationDelay: '400ms' }}
-          >
-            {STATS.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-primary text-3xl font-bold tracking-tight sm:text-4xl">
-                  {stat.value}
-                </p>
-                <p className="text-muted-foreground mt-1 text-xs sm:text-sm">{stat.label}</p>
-              </div>
-            ))}
           </div>
         </section>
 

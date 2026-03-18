@@ -35,6 +35,12 @@ function SaveIndicator() {
   );
 }
 
+const VALID_STEPS = new Set(['input', 'review', 'confirm', 'results']);
+
+function toStep(value: string): 'input' | 'review' | 'confirm' | 'results' {
+  return VALID_STEPS.has(value) ? (value as 'input' | 'review' | 'confirm' | 'results') : 'input';
+}
+
 /** Hydrate store synchronously from server-fetched session data */
 function hydrateStore(session: ResearchSession) {
   const state = useResearchStore.getState();
@@ -44,7 +50,7 @@ function hydrateStore(session: ResearchSession) {
   useResearchStore.setState({
     sessionId: session.id,
     sessionName: session.name,
-    step: (session.step || 'input') as 'input' | 'review' | 'confirm' | 'results',
+    step: toStep(session.step || 'input'),
     transcript: session.transcript || '',
     icp: session.icp,
     strategyMessages: session.strategy_messages || [],

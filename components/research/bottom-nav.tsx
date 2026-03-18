@@ -1,8 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, ChevronRight, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
 import { useResearchStore } from '@/lib/store/research-store';
 
 function NavButton({
@@ -73,7 +85,7 @@ export function BottomNav() {
         {/* Left: step navigation */}
         <div className="flex items-center gap-1 text-xs">
           <NavButton
-            label="1. Transcript"
+            label="1. Describe"
             active={step === 'input'}
             enabled
             onClick={() => setStep('input')}
@@ -112,19 +124,24 @@ export function BottomNav() {
 
           {step === 'input' && (
             <>
-              <Button size="sm" variant="ghost" onClick={skipToReview}>
-                Skip
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={skipToReview}
+                title="Start with a blank profile"
+              >
+                Skip to Strategy
                 <ChevronRight className="size-4" />
               </Button>
               <Button size="sm" onClick={extractICP} disabled={isExtracting || !transcript.trim()}>
                 {isExtracting ? (
                   <>
                     <Loader2 className="size-3.5 animate-spin" />
-                    Extracting...
+                    Analyzing...
                   </>
                 ) : (
                   <>
-                    Extract ICP
+                    Analyze
                     <ChevronRight className="size-4" />
                   </>
                 )}
@@ -145,7 +162,7 @@ export function BottomNav() {
                 onClick={approveStrategy}
                 disabled={isStrategizing || strategyMessages.length === 0}
               >
-                Approve &amp; Start
+                Find Companies
                 <ChevronRight className="size-4" />
               </Button>
             </>
@@ -187,17 +204,47 @@ export function BottomNav() {
                   Researching...
                 </span>
               )}
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  startOver();
-                  router.push('/research');
-                }}
-              >
-                <RotateCcw className="size-3.5" />
-                New Research
-              </Button>
+              {hasResults ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline">
+                      <RotateCcw className="size-3.5" />
+                      New Research
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Start new research?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Your current session is saved, but you&apos;ll leave this view.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          startOver();
+                          router.push('/research');
+                        }}
+                      >
+                        Start New
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    startOver();
+                    router.push('/research');
+                  }}
+                >
+                  <RotateCcw className="size-3.5" />
+                  New Research
+                </Button>
+              )}
             </>
           )}
         </div>

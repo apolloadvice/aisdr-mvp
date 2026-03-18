@@ -42,7 +42,8 @@ function DialogOverlay({
 const DIALOG_SIZES = {
   sm: 'sm:max-w-sm',
   md: 'sm:max-w-md',
-  lg: 'sm:max-w-4xl'
+  lg: 'sm:max-w-4xl',
+  xl: 'sm:max-w-5xl'
 } as const;
 
 function DialogContent({

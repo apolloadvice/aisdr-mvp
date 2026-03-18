@@ -23,17 +23,11 @@ export const fonts: FontDefinition[] = [
     name: 'Space Grotesk',
     variable: '--font-space-grotesk',
     description: 'Technical and sharp'
-  },
-  {
-    id: 'geist-mono',
-    name: 'Geist Mono',
-    variable: '--font-geist-mono',
-    description: 'Monospaced'
   }
 ];
 
 export const fontIds = fonts.map((f) => f.id);
-export const defaultFontId = 'sora';
+export const defaultFontId = 'space-grotesk';
 
 export function getFontDefinition(id: string): FontDefinition | undefined {
   return fonts.find((f) => f.id === id);

@@ -79,6 +79,7 @@ export interface SentEmail {
   status: 'sent' | 'failed';
   error_message: string | null;
   gmail_message_id: string | null;
+  session_id: string | null;
   created_at: string;
 }
 
@@ -88,6 +89,7 @@ export interface SendEmailRequest {
   body: string;
   companyName: string;
   contactName: string;
+  sessionId?: string;
 }
 
 export interface DiscoveredCompanyPreview {

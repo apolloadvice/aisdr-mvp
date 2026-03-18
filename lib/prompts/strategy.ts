@@ -47,20 +47,22 @@ ${formatIcpBlock(icp)}
 ${WEB_SEARCH_INSTRUCTIONS}
 
 ## Your Task
-Present a research strategy with three sections. Use markdown formatting. Be specific, not generic — reference the actual ICP details. Keep it concise (aim for ~200 words total).
+Present a research strategy in three short sections. Use markdown formatting. Be specific — reference the actual ICP details.
+
+IMPORTANT: Keep your ENTIRE response under 150 words. This displays in a small chat panel. Be punchy, not thorough.
 
 ### 1. Company Search
-Explain what types of companies you'll search for, which industries, what signals indicate they're a good fit, and roughly how many you'll target. Mention specific verticals or niches you'll explore beyond the obvious ones.
+2-3 sentences: what companies, which signals, any non-obvious niches.
 
 ### 2. Contact Targeting
-Describe what roles/titles you'll prioritize and why. Explain the decision-maker hierarchy you'll use.
+1-2 sentences: which roles, why.
 
 ### 3. Email Approach
-Describe how you'll personalize outreach. What types of signals will you reference? What hooks will make emails stand out?
+1-2 sentences: what hooks, which signals to reference.
 
-End by asking if the user wants to adjust anything. Do NOT tell them to say "go" or "proceed" — the user has a separate button for that.
+End with one short question asking if they want to adjust anything. Do NOT tell them to say "go" or "proceed" — the user has a separate button for that.
 
-Do NOT use bullet points excessively. Write in short, confident paragraphs. Sound like a strategist briefing a sales leader, not a generic AI.`;
+Write in short, confident sentences. No bullet points. Sound like a strategist, not a generic AI.`;
 }
 
 export function buildStrategyRevisionPrompt(icp: ICPCriteria): string {
@@ -71,11 +73,15 @@ ${WEB_SEARCH_INSTRUCTIONS}
 ${ICP_UPDATE_INSTRUCTIONS}
 
 ## Your Task
-Based on the conversation so far, respond to the user's feedback. If they requested significant changes, present an UPDATED research strategy using the three-section format (Company Search, Contact Targeting, Email Approach). If the feedback is minor, just address it concisely without repeating the full strategy.
+Respond to the user's latest feedback. Keep your ENTIRE response under 100 words — this displays in a small chat panel.
 
-If the user asked you to look at a website or document, search for it, summarize what you found, and explain how you'll use it in the research.
+- Minor feedback → address it in 1-2 sentences, don't repeat the full strategy
+- Major changes → give a brief updated strategy (still under 100 words)
+- Website/URL request → search for it, give a 1-2 sentence summary of what you found and how you'll use it
 
-End by summarizing what changed and asking if the user wants further adjustments. Do NOT tell them to say "go" or "proceed" — the user has a separate button for that.
+If the user asked you to look at a website or document, USE your web search tool.
 
-Keep it concise. Sound like a strategist, not a generic AI.`;
+End with one short line asking if they want further adjustments. Do NOT tell them to say "go" or "proceed" — the user has a separate button for that.
+
+No bullet points. Short sentences.`;
 }

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
-import { SessionsPage } from '@/components/research/sessions-page.client';
-import type { ResearchSessionSummary } from '@/lib/types';
+import { ResearchHub } from '@/components/research/research-hub.client';
+import type { SavedICP } from '@/lib/types';
 
 export default async function Research() {
   const supabase = await createClient();
@@ -8,26 +8,31 @@ export default async function Research() {
     data: { user }
   } = await supabase.auth.getUser();
 
-  let sessions: ResearchSessionSummary[] = [];
+  if (!user) return <ResearchHub sessions={[]} icps={[]} />;
 
-  if (user) {
-    const { data } = await supabase
+  const [sessionsRes, icpsRes] = await Promise.all([
+    supabase
       .from('research_sessions')
       .select('id, name, step, status, icp, candidates, created_at, updated_at')
       .eq('user_id', user.id)
-      .order('updated_at', { ascending: false });
+      .order('updated_at', { ascending: false }),
+    supabase
+      .from('saved_icps')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+  ]);
 
-    sessions = (data ?? []).map((row) => ({
-      id: row.id,
-      name: row.name,
-      step: row.step,
-      status: row.status as 'in_progress' | 'completed',
-      icp_description: row.icp?.description ?? null,
-      company_count: Array.isArray(row.candidates) ? row.candidates.length : 0,
-      created_at: row.created_at,
-      updated_at: row.updated_at
-    }));
-  }
+  const sessions = (sessionsRes.data ?? []).map((row) => ({
+    id: row.id,
+    name: row.name,
+    step: row.step,
+    status: row.status,
+    icp_description: row.icp?.description ?? null,
+    company_count: Array.isArray(row.candidates) ? row.candidates.length : 0,
+    created_at: row.created_at,
+    updated_at: row.updated_at
+  }));
 
-  return <SessionsPage sessions={sessions} />;
+  return <ResearchHub sessions={sessions} icps={(icpsRes.data ?? []) as SavedICP[]} />;
 }

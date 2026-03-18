@@ -12,7 +12,7 @@
   /* Semantic tokens (oklch L C H) */
 
   /* Gold primary, warm sand secondary, slate-blue tertiary */
-  --accent-primary: 0.87 0.15 88;
+  --accent-primary: 0.8 0.15 88;
   --accent-secondary: 0.62 0.04 70;
   --accent-tertiary: 0.52 0.1 250;
 
@@ -84,7 +84,7 @@
   --card-foreground: rgba(0, 0, 0, 0.87);
   --popover: #ffffff;
   --popover-foreground: rgba(0, 0, 0, 0.87);
-  --primary: #fecf40;
+  --primary: #e8b820;
   --primary-foreground: #000000;
   --secondary: #f5f4f2;
   --secondary-foreground: #3d3b38;
@@ -96,11 +96,11 @@
   --destructive-foreground: #ffffff;
   --border: #e8e6e3;
   --input: #e8e6e3;
-  --ring: #fecf40;
+  --ring: #e8b820;
   --radius: 0.5rem;
 
   /* Chart palette — gold, blue, green, warm spread */
-  --chart-1: #fecf40;
+  --chart-1: #e8b820;
   --chart-2: hsl(220 50% 48%);
   --chart-3: hsl(155 40% 42%);
   --chart-4: hsl(270 35% 50%);
@@ -109,10 +109,10 @@
   /* Sidebar */
   --sidebar-background: #ffffff;
   --sidebar-foreground: #7a7774;
-  --sidebar-primary: #fecf40;
+  --sidebar-primary: #e8b820;
   --sidebar-primary-foreground: #000000;
   --sidebar-accent: #f5f4f2;
   --sidebar-accent-foreground: rgba(0, 0, 0, 0.87);
   --sidebar-border: #e8e6e3;
-  --sidebar-ring: #fecf40;
+  --sidebar-ring: #e8b820;
 }

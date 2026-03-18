@@ -1,106 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Loader2, Send, Check, Search, X, Plus, Save } from 'lucide-react';
+import { Loader2, Send, Check, Search, Save } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useResearchStore } from '@/lib/store/research-store';
 import { useICPStore } from '@/lib/store/icp-store';
-
-type TagColor = 'primary' | 'secondary' | 'accent-secondary' | 'accent-tertiary';
-
-const TAG_COLORS: Record<TagColor, string> = {
-  primary: 'bg-primary/10 text-primary',
-  secondary: 'bg-muted text-muted-foreground',
-  'accent-secondary': 'bg-accent-secondary/10 text-accent-secondary',
-  'accent-tertiary': 'bg-accent-tertiary/10 text-accent-tertiary'
-};
-
-function EditableTagGroup({
-  label,
-  tags,
-  color = 'primary',
-  onChange
-}: {
-  label: string;
-  tags: string[];
-  color?: TagColor;
-  onChange: (tags: string[]) => void;
-}) {
-  const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleRemove = (tag: string): void => {
-    onChange(tags.filter((t) => t !== tag));
-  };
-
-  const handleAdd = (): void => {
-    const trimmed = draft.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      onChange([...tags, trimmed]);
-    }
-    setDraft('');
-    setAdding(false);
-  };
-
-  useEffect(() => {
-    if (adding) inputRef.current?.focus();
-  }, [adding]);
-
-  return (
-    <div>
-      <label className="text-muted-foreground mb-1.5 block text-xs font-medium">{label}</label>
-      <div className="flex flex-wrap items-center gap-1">
-        {tags.map((tag) => (
-          <span
-            key={tag}
-            className={`flex items-center gap-0.5 ${TAG_COLORS[color]}`}
-            style={{
-              borderRadius: 'var(--tag-radius, 9999px)',
-              paddingInline: 'var(--tag-padding-x, 0.5rem)',
-              paddingBlock: 'var(--tag-padding-y, 0.125rem)',
-              fontSize: 'var(--tag-font-size, 0.75rem)'
-            }}
-          >
-            {tag}
-            <button
-              onClick={() => handleRemove(tag)}
-              className="hover:text-destructive ml-0.5 opacity-60 transition-opacity hover:opacity-100"
-            >
-              <X className="size-2.5" />
-            </button>
-          </span>
-        ))}
-        {adding ? (
-          <Input
-            ref={inputRef}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleAdd();
-              if (e.key === 'Escape') {
-                setAdding(false);
-                setDraft('');
-              }
-            }}
-            onBlur={handleAdd}
-            className="h-5 w-24 rounded-md border-none px-1.5 text-xs shadow-none focus-visible:ring-1"
-          />
-        ) : (
-          <button
-            onClick={() => setAdding(true)}
-            className="text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs transition-colors"
-          >
-            <Plus className="size-2.5" />
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+import { IcpPanelEditable } from './icp-panel-editable';
 
 function SaveICPButton() {
   const icp = useResearchStore((s) => s.icp);
@@ -110,18 +18,24 @@ function SaveICPButton() {
   const [saved, setSaved] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const defaultName = icp?.description?.slice(0, 40).trim() || '';
+
   useEffect(() => {
-    if (naming) inputRef.current?.focus();
+    if (naming) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
   }, [naming]);
 
   const handleSave = async () => {
-    if (!name.trim() || !icp) return;
+    const finalName = name.trim() || defaultName;
+    if (!finalName || !icp) return;
     try {
-      await saveICP(name.trim(), icp);
+      await saveICP(finalName, icp);
       setSaved(true);
       setNaming(false);
       setName('');
-      setTimeout(() => setSaved(false), 2000);
+      setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       console.error('Failed to save ICP:', err);
     }
@@ -131,7 +45,7 @@ function SaveICPButton() {
     return (
       <span className="text-primary flex items-center gap-1 text-xs">
         <Check className="size-3" />
-        Saved
+        Saved to Profiles
       </span>
     );
   }
@@ -150,10 +64,10 @@ function SaveICPButton() {
               setName('');
             }
           }}
-          placeholder="ICP name..."
-          className="h-6 w-32 text-xs"
+          placeholder={defaultName || 'ICP name...'}
+          className="h-6 w-44 text-xs"
         />
-        <Button size="icon-xs" label="Save" onClick={handleSave} disabled={!name.trim()}>
+        <Button size="icon-xs" label="Save" onClick={handleSave}>
           <Check className="size-3" />
         </Button>
       </div>
@@ -164,11 +78,14 @@ function SaveICPButton() {
     <Button
       variant="ghost"
       size="xs"
-      onClick={() => setNaming(true)}
+      onClick={() => {
+        setName(defaultName);
+        setNaming(true);
+      }}
       className="text-muted-foreground"
     >
       <Save className="size-3" />
-      Save ICP
+      Save Profile
     </Button>
   );
 }
@@ -177,113 +94,17 @@ function IcpPanel() {
   const icp = useResearchStore((s) => s.icp)!;
   const updateIcp = useResearchStore((s) => s.updateIcp);
 
-  const formatMoney = (amount: number | null): string => {
-    if (!amount) return '';
-    return String(amount / 1_000_000);
-  };
-
   return (
-    <div className="border-border bg-card overflow-hidden rounded-[var(--card-radius)] border">
-      <div className="bg-muted/50 border-border flex items-center justify-between border-b px-4 py-2.5">
-        <span className="text-muted-foreground section-label">Current ICP</span>
-        <SaveICPButton />
-      </div>
-
-      <div className="space-y-4 p-4">
-        {/* Description */}
-        <div>
-          <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
-            Description
-          </label>
-          <Textarea
-            value={icp.description}
-            onChange={(e) => updateIcp('description', e.target.value)}
-            className="min-h-15 resize-none text-sm"
-          />
-        </div>
-
-        {/* Tag fields */}
-        <EditableTagGroup
-          label="Industries"
-          tags={icp.industry_keywords}
-          onChange={(v) => updateIcp('industry_keywords', v)}
-        />
-        <EditableTagGroup
-          label="Tech Keywords"
-          tags={icp.tech_keywords}
-          color="secondary"
-          onChange={(v) => updateIcp('tech_keywords', v)}
-        />
-        <EditableTagGroup
-          label="Hiring Signals"
-          tags={icp.hiring_signals}
-          color="accent-secondary"
-          onChange={(v) => updateIcp('hiring_signals', v)}
-        />
-        <EditableTagGroup
-          label="Example Companies"
-          tags={icp.company_examples}
-          color="accent-tertiary"
-          onChange={(v) => updateIcp('company_examples', v)}
-        />
-        <EditableTagGroup
-          label="Funding Stages"
-          tags={icp.funding_stages}
-          onChange={(v) => updateIcp('funding_stages', v)}
-        />
-
-        {/* Scalar fields */}
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
-              Min Funding ($M)
-            </label>
-            <Input
-              type="number"
-              value={formatMoney(icp.min_funding_amount)}
-              onChange={(e) =>
-                updateIcp(
-                  'min_funding_amount',
-                  e.target.value ? Number(e.target.value) * 1_000_000 : null
-                )
-              }
-              placeholder="e.g. 50"
-              className="text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
-              Min Employees
-            </label>
-            <Input
-              type="number"
-              value={icp.min_employees ?? ''}
-              onChange={(e) =>
-                updateIcp('min_employees', e.target.value ? Number(e.target.value) : null)
-              }
-              placeholder="—"
-              className="text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
-              Max Employees
-            </label>
-            <Input
-              type="number"
-              value={icp.max_employees ?? ''}
-              onChange={(e) =>
-                updateIcp('max_employees', e.target.value ? Number(e.target.value) : null)
-              }
-              placeholder="—"
-              className="text-sm"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+    <IcpPanelEditable
+      icp={icp}
+      onUpdate={updateIcp}
+      header={
+        <>
+          <span className="text-muted-foreground section-label">Customer Profile</span>
+          <SaveICPButton />
+        </>
+      }
+    />
   );
 }
 

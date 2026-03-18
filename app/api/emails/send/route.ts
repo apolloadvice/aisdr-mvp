@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
   const emailBody = typeof body.body === 'string' ? body.body : '';
   const companyName = typeof body.companyName === 'string' ? body.companyName : '';
   const contactName = typeof body.contactName === 'string' ? body.contactName : '';
+  const sessionId = typeof body.sessionId === 'string' ? body.sessionId : null;
 
   if (!to || !subject || !emailBody) {
     return Response.json({ error: 'to, subject, and body are required' }, { status: 400 });
@@ -38,7 +39,8 @@ export async function POST(req: NextRequest) {
         company_name: companyName,
         contact_name: contactName,
         status: 'sent',
-        gmail_message_id: messageId
+        gmail_message_id: messageId,
+        session_id: sessionId
       })
       .select('id')
       .single();
@@ -51,6 +53,7 @@ export async function POST(req: NextRequest) {
           company_name: companyName,
           contact_email: to,
           contact_name: contactName,
+          session_id: sessionId,
           sent_email_id: sentEmail?.id ?? null
         },
         { onConflict: 'user_id,company_name,contact_email' }
@@ -70,7 +73,8 @@ export async function POST(req: NextRequest) {
       company_name: companyName,
       contact_name: contactName,
       status: 'failed',
-      error_message: errorMessage
+      error_message: errorMessage,
+      session_id: sessionId
     });
 
     return Response.json({ error: errorMessage }, { status: 500 });

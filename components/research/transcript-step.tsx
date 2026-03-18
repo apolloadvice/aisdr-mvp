@@ -6,8 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useResearchStore } from '@/lib/store/research-store';
 import { useICPStore } from '@/lib/store/icp-store';
-
-const EXAMPLE_INPUT = `We sell GPU scheduling and orchestration software for ML teams. Our ideal customer is an AI-intensive startup that's scaling past the point where manual GPU management works. They've typically raised $30M+ and are hiring for MLOps, ML Platform, or GPU infrastructure roles. Key signals we look for are job postings mentioning Kubernetes GPU scheduling, distributed training, or compute cost optimization. Companies like Modal, Anyscale, and Replicate are good examples of the type of company we sell to, though they're also competitors in some ways. We mainly target VP of Infrastructure, Head of ML Platform, or CTO as the buyer.`;
+import { EXAMPLE_CUSTOMER_INPUT } from '@/lib/constants';
 
 function ICPPicker() {
   const icps = useICPStore((s) => s.icps);
@@ -118,7 +117,7 @@ export function TranscriptStep() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setTranscript(EXAMPLE_INPUT)}
+            onClick={() => setTranscript(EXAMPLE_CUSTOMER_INPUT)}
             className="text-muted-foreground"
           >
             <FileText className="size-3.5" />
