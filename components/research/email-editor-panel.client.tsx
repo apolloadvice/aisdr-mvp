@@ -1,16 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Copy,
-  Check,
-  Send,
-  RefreshCw,
-  Loader2,
-  Link2,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
+import { Send, RefreshCw, Loader2, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -44,7 +35,6 @@ export function EmailEditorPanel({
   const [activeStep, setActiveStep] = useState(0);
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
-  const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<{
@@ -155,26 +145,6 @@ export function EmailEditorPanel({
     }
   }, [params, activeStep, loadStep]);
 
-  const handleCopy = useCallback(() => {
-    const text = `Subject: ${subject}\n\n${body}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [subject, body]);
-
-  const handleCopyAll = useCallback(() => {
-    if (!steps) return;
-    // Save current edits
-    const current = [...steps] as [GeneratedEmail, GeneratedEmail, GeneratedEmail];
-    current[activeStep] = { subject, body };
-
-    const text = current
-      .map((step, i) => `--- ${STEP_LABELS[i]} ---\nSubject: ${step.subject}\n\n${step.body}`)
-      .join('\n\n');
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [steps, activeStep, subject, body]);
 
   const handleSend = useCallback(async () => {
     if (!params || !toEmail) return;
@@ -287,19 +257,6 @@ export function EmailEditorPanel({
               <RefreshCw className="size-3.5" />
             )}
             {generating ? 'Generating...' : 'Regenerate'}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleCopy} disabled={generating}>
-            {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-            {copied ? 'Copied' : 'Copy'}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopyAll}
-            disabled={generating || !steps}
-          >
-            <Copy className="size-3.5" />
-            Copy All
           </Button>
           <div className="ml-auto flex items-center gap-2">
             {/* Step navigation arrows */}
