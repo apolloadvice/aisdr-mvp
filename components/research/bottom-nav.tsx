@@ -19,29 +19,48 @@ import { useResearchStore } from '@/lib/store/research-store';
 
 function NavButton({
   label,
+  stepNumber,
   active,
   enabled,
   onClick
 }: {
   label: string;
+  stepNumber: number;
   active: boolean;
   enabled: boolean;
   onClick: () => void;
 }) {
   return (
-    <button
-      onClick={() => enabled && onClick()}
-      disabled={!enabled}
-      className={`rounded-md px-2.5 py-1.5 transition-colors ${
-        active
-          ? 'bg-muted text-foreground font-medium'
-          : enabled
-            ? 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-            : 'text-muted-foreground/50 cursor-not-allowed'
-      }`}
-    >
-      {label}
-    </button>
+    <>
+      {/* Mobile: circular step indicator */}
+      <button
+        onClick={() => enabled && onClick()}
+        disabled={!enabled}
+        className={`flex size-8 items-center justify-center rounded-full text-xs font-medium transition-colors md:hidden ${
+          active
+            ? 'bg-primary text-primary-foreground'
+            : enabled
+              ? 'bg-muted text-muted-foreground hover:text-foreground'
+              : 'bg-muted/50 text-muted-foreground/50 cursor-not-allowed'
+        }`}
+      >
+        {stepNumber}
+      </button>
+      {/* Desktop: full label */}
+      <button
+        onClick={() => enabled && onClick()}
+        disabled={!enabled}
+        className={`hidden rounded-md px-2.5 py-1.5 transition-colors md:block ${
+          active
+            ? 'bg-muted text-foreground font-medium'
+            : enabled
+              ? 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              : 'text-muted-foreground/50 cursor-not-allowed'
+        }`}
+      >
+        {label}
+      </button>
+    </>
   );
 }
 
@@ -81,32 +100,36 @@ export function BottomNav() {
         backdropFilter: 'var(--bottom-nav-backdrop, blur(8px))'
       }}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-6">
         {/* Left: step navigation */}
         <div className="flex items-center gap-1 text-xs">
           <NavButton
             label="1. Describe"
+            stepNumber={1}
             active={step === 'input'}
             enabled
             onClick={() => setStep('input')}
           />
-          <span className="text-border">&mdash;</span>
+          <span className="text-border hidden md:inline">&mdash;</span>
           <NavButton
             label="2. Strategy"
+            stepNumber={2}
             active={step === 'review'}
             enabled={hasIcp}
             onClick={() => setStep('review')}
           />
-          <span className="text-border">&mdash;</span>
+          <span className="text-border hidden md:inline">&mdash;</span>
           <NavButton
             label="3. Companies"
+            stepNumber={3}
             active={step === 'confirm'}
             enabled={hasCandidates || isDiscovering}
             onClick={() => setStep('confirm')}
           />
-          <span className="text-border">&mdash;</span>
+          <span className="text-border hidden md:inline">&mdash;</span>
           <NavButton
             label="4. Results"
+            stepNumber={4}
             active={step === 'results'}
             enabled={hasResults || isResearching}
             onClick={() => setStep('results')}

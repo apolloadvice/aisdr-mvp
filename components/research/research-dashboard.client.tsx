@@ -126,8 +126,8 @@ export function ResearchDashboard({ session }: { session: ResearchSession }) {
   ]);
 
   return (
-    <div className="bg-background min-h-screen">
-      <main className="mx-auto max-w-7xl px-6 pt-10 pb-24">
+    <div className="bg-background min-h-[100dvh]">
+      <main className="mx-auto max-w-7xl px-4 pt-10 pb-24 md:px-6">
         {sessionId && (
           <div className="mb-4 flex items-center justify-between">
             <h1 className="text-muted-foreground truncate text-sm font-medium">{sessionName}</h1>

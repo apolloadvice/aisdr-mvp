@@ -212,7 +212,7 @@ export function ConfirmStep() {
         {/* Add custom */}
         <div className="border-border border-t px-4 py-2.5">
           {adding ? (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Input
                 value={newCompany}
                 onChange={(e) => setNewCompany(e.target.value)}

@@ -116,6 +116,7 @@ export function EmailEditorPanel({
   const [gmailChecked, setGmailChecked] = useState(false);
   const [selectedSignatureId, setSelectedSignatureId] = useState<string>('none');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const signatures = useSignatureStore((s) => s.signatures);
   const loadSignatures = useSignatureStore((s) => s.loadSignatures);
@@ -271,9 +272,9 @@ export function EmailEditorPanel({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent size="xl" className="flex h-[680px] flex-col gap-0 p-0">
-        <DialogHeader className="border-border shrink-0 border-b px-6 py-4">
-          <div className="flex items-center justify-between pr-8">
+      <DialogContent size="xl" className="flex h-[100dvh] flex-col gap-0 p-0 md:h-[680px]">
+        <DialogHeader className="border-border shrink-0 border-b px-4 py-4 md:px-6">
+          <div className="flex flex-col gap-2 pr-8 md:flex-row md:items-center md:justify-between">
             <div>
               <DialogTitle>{company?.company_name ?? ''}</DialogTitle>
               <DialogDescription>
@@ -300,11 +301,13 @@ export function EmailEditorPanel({
           </div>
         </DialogHeader>
 
-        {/* Two-column layout */}
-        <div className="flex min-h-0 flex-1">
+        {/* Two-column layout (single column on mobile) */}
+        <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           {/* Left column — Editor */}
-          <div className="border-border flex w-1/2 flex-col border-r">
-            <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-5">
+          <div
+            className={`border-border flex w-full flex-col md:w-1/2 md:border-r ${showPreview ? 'hidden md:flex' : 'flex'}`}
+          >
+            <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4 md:p-5">
               <div className="space-y-1.5">
                 <label className="text-muted-foreground text-xs font-medium">To</label>
                 <Input
@@ -355,7 +358,15 @@ export function EmailEditorPanel({
             </div>
 
             {/* Footer actions */}
-            <div className="border-border flex items-center gap-2 border-t px-5 py-3">
+            <div className="border-border flex flex-wrap items-center gap-2 border-t px-4 py-3 md:px-5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview(true)}
+                className="md:hidden"
+              >
+                Preview
+              </Button>
               <Button variant="outline" size="sm" onClick={handleRegenerate} disabled={generating}>
                 {generating ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -449,8 +460,19 @@ export function EmailEditorPanel({
           </div>
 
           {/* Right column — Live preview */}
-          <div className="flex min-h-0 w-1/2 flex-col p-5">
-            <p className="text-muted-foreground mb-2 shrink-0 text-xs font-medium">Preview</p>
+          <div
+            className={`flex min-h-0 w-full flex-col p-4 md:w-1/2 md:p-5 ${showPreview ? 'flex' : 'hidden md:flex'}`}
+          >
+            <div className="mb-2 flex shrink-0 items-center justify-between">
+              <p className="text-muted-foreground text-xs font-medium">Preview</p>
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                className="text-muted-foreground hover:text-foreground text-xs md:hidden"
+              >
+                Back to editor
+              </button>
+            </div>
             <div className="min-h-0 flex-1">
               <EmailPreview
                 toEmail={toEmail}

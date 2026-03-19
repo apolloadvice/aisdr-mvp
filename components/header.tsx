@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Menu } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription
+} from '@/components/ui/sheet';
 import { useAuthStore } from '@/lib/store/auth-store';
 import { useProfileStore } from '@/lib/store/profile-store';
 import { createClient } from '@/lib/supabase/client';
@@ -75,6 +84,54 @@ function UserAvatar() {
   );
 }
 
+function MobileNav() {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  return (
+    <div className="md:hidden">
+      <Button variant="ghost" size="icon-sm" onClick={() => setOpen(true)}>
+        <Menu className="size-5" />
+        <span className="sr-only">Open menu</span>
+      </Button>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="right" size="sm">
+          <SheetHeader>
+            <SheetTitle>Navigation</SheetTitle>
+            <SheetDescription className="sr-only">Site navigation links</SheetDescription>
+          </SheetHeader>
+          <nav className="flex flex-col gap-1 px-4">
+            <Link
+              href="/research"
+              className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                pathname.startsWith('/research')
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+              }`}
+            >
+              Research
+            </Link>
+            <Link
+              href="/emails"
+              className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                pathname.startsWith('/emails')
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+              }`}
+            >
+              Emails
+            </Link>
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
+
 export function Header() {
   return (
     <header
@@ -85,7 +142,7 @@ export function Header() {
         backdropFilter: 'var(--header-backdrop, none)'
       }}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2.5">
             <SignalMark className="text-primary" />
@@ -96,14 +153,17 @@ export function Header() {
               Beta
             </span>
           </Link>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
             <Link href="/research">Research</Link>
           </Button>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
             <Link href="/emails">Emails</Link>
           </Button>
         </div>
-        <UserAvatar />
+        <div className="flex items-center gap-2">
+          <UserAvatar />
+          <MobileNav />
+        </div>
       </div>
     </header>
   );

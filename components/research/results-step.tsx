@@ -328,8 +328,8 @@ export function ResultsStep() {
             />
           )}
 
-          <div className="border-border bg-card overflow-x-auto rounded-[var(--card-radius)] border">
-            <div className={`bg-muted/50 border-border grid ${GRID_COLS} border-b`}>
+          <div className="border-border bg-card overflow-x-auto rounded-[var(--card-radius)] border lg:overflow-x-auto">
+            <div className={`bg-muted/50 border-border hidden ${GRID_COLS} border-b lg:grid`}>
               {['Company', 'Target Person', 'Buying Signal', 'Overview & Fit'].map(
                 (label, i, arr) => (
                   <div

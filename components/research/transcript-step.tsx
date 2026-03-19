@@ -50,7 +50,7 @@ function ICPPicker() {
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="border-border bg-card absolute bottom-full left-0 z-20 mb-1 w-72 overflow-hidden rounded-lg border shadow-lg">
+          <div className="border-border bg-card absolute bottom-full left-0 z-20 mb-1 w-full overflow-hidden rounded-lg border shadow-lg sm:w-72">
             {isLoading ? (
               <div className="text-muted-foreground px-4 py-3 text-xs">Loading...</div>
             ) : (
@@ -113,7 +113,7 @@ export function TranscriptStep() {
           />
         </div>
 
-        <div className="border-border flex items-center gap-2 border-t px-4 py-2.5">
+        <div className="border-border flex flex-wrap items-center gap-2 border-t px-4 py-2.5">
           <Button
             variant="ghost"
             size="sm"

@@ -51,22 +51,22 @@ export function ProfileModal() {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && closeProfile()}>
       <DialogContent size="lg" className="p-0">
-        <div className="flex h-[560px]">
-          {/* Sidebar */}
-          <div className="border-border flex w-48 shrink-0 flex-col border-r p-4">
+        <div className="flex max-h-[90dvh] flex-col md:h-[560px] md:flex-row">
+          {/* Sidebar — horizontal tabs on mobile, vertical on desktop */}
+          <div className="border-border flex w-full shrink-0 flex-col border-b p-4 md:w-48 md:border-r md:border-b-0">
             <DialogHeader className="mb-4 px-1">
               <DialogTitle className="text-sm">Settings</DialogTitle>
               <DialogDescription className="sr-only">
                 Manage your account, connections, and preferences.
               </DialogDescription>
             </DialogHeader>
-            <nav className="flex flex-col gap-0.5">
+            <nav className="flex flex-row gap-0.5 overflow-x-auto md:flex-col">
               {TABS.map((item) => (
                 <button
                   key={item.value}
                   type="button"
                   onClick={() => setTab(item.value)}
-                  className={`rounded-md px-3 py-1.5 text-left text-sm transition-colors ${
+                  className={`shrink-0 rounded-md px-3 py-1.5 text-left text-sm transition-colors ${
                     tab === item.value
                       ? 'bg-muted text-foreground font-medium'
                       : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -79,7 +79,7 @@ export function ProfileModal() {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6">
             {tab === 'profile' && <ProfileTab />}
             {tab === 'appearance' && <AppearanceTab />}
             {tab === 'connections' && <ConnectionsTab />}

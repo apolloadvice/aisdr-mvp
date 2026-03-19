@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Loader2, Send, Search, Save } from 'lucide-react';
+import { Loader2, Send, Search, Save, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
@@ -126,6 +126,8 @@ export function StrategyStep() {
     }
   };
 
+  const [icpOpen, setIcpOpen] = useState(false);
+
   return (
     <div className="flex flex-col">
       {/* Header */}
@@ -138,11 +140,33 @@ export function StrategyStep() {
 
       {error && <p className="text-destructive mb-3 shrink-0 text-sm">{error}</p>}
 
-      {/* Side-by-side: ICP drives height, chat matches it */}
-      <div className="relative flex gap-4">
-        {/* Chat — pinned to ICP height via absolute positioning */}
-        <div className="absolute top-0 bottom-0 left-0 w-80">
-          <div className="border-border bg-card flex h-full flex-col overflow-hidden rounded-[var(--card-radius)] border">
+      {/* Mobile: stacked, Desktop: side-by-side with absolute chat */}
+      <div className="flex flex-col gap-4 lg:relative lg:flex-row">
+        {/* Mobile ICP toggle */}
+        {icp && (
+          <div className="lg:hidden">
+            <button
+              onClick={() => setIcpOpen(!icpOpen)}
+              className="bg-card border-border flex w-full items-center justify-between rounded-[var(--card-radius)] border px-4 py-3"
+            >
+              <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                Customer Profile
+              </span>
+              <ChevronDown
+                className={`text-muted-foreground size-4 transition-transform duration-200 ${icpOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+            <div
+              className={`overflow-hidden transition-all duration-200 ${icpOpen ? 'mt-2 max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}
+            >
+              <IcpPanel />
+            </div>
+          </div>
+        )}
+
+        {/* Chat panel */}
+        <div className="w-full lg:absolute lg:top-0 lg:bottom-0 lg:left-0 lg:w-80">
+          <div className="border-border bg-card flex h-full min-h-[400px] flex-col overflow-hidden rounded-[var(--card-radius)] border lg:min-h-0">
             <div className="bg-muted/50 border-border flex shrink-0 items-center justify-between border-b px-4 py-2.5">
               <span className="text-muted-foreground section-label">Strategy Chat</span>
             </div>
@@ -214,9 +238,9 @@ export function StrategyStep() {
           </div>
         </div>
 
-        {/* ICP Panel — right, drives the row height */}
+        {/* ICP Panel — desktop only, drives the row height */}
         {icp && (
-          <div className="min-w-0 flex-1" style={{ marginLeft: '21rem' }}>
+          <div className="hidden min-w-0 flex-1 lg:block" style={{ marginLeft: '21rem' }}>
             <IcpPanel />
           </div>
         )}
