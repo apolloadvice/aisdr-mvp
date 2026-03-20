@@ -8,7 +8,6 @@ import { StrategyStep } from './strategy-step';
 import { ConfirmStep } from './confirm-step';
 import { ResultsStep } from './results-step';
 import { BottomNav } from './bottom-nav';
-import { EmailEditorPanel } from './email-editor-panel.client';
 import type { ResearchSession } from '@/lib/types';
 
 function SaveIndicator() {
@@ -74,8 +73,6 @@ export function ResearchDashboard({ session }: { session: ResearchSession }) {
   const isExtracting = useResearchStore((s) => s.isExtracting);
   const isResearching = useResearchStore((s) => s.isResearching);
   const selectedCompanies = useResearchStore((s) => s.selectedCompanies);
-  const composeParams = useResearchStore((s) => s.composeParams);
-
   const extractICP = useResearchStore((s) => s.extractICP);
   const approveStrategy = useResearchStore((s) => s.approveStrategy);
   const isStrategizing = useResearchStore((s) => s.isStrategizing);
@@ -126,7 +123,7 @@ export function ResearchDashboard({ session }: { session: ResearchSession }) {
   ]);
 
   return (
-    <div className="bg-background min-h-[100dvh]">
+    <div className="bg-background min-h-dvh">
       <main className="mx-auto max-w-7xl px-4 pt-10 pb-24 md:px-6">
         {sessionId && (
           <div className="mb-4 flex items-center justify-between">
@@ -142,12 +139,6 @@ export function ResearchDashboard({ session }: { session: ResearchSession }) {
           {step === 'results' && <ResultsStep />}
         </div>
       </main>
-
-      <EmailEditorPanel
-        open={composeParams !== null}
-        params={composeParams}
-        onClose={() => useResearchStore.getState().setComposeParams(null)}
-      />
 
       <BottomNav />
     </div>

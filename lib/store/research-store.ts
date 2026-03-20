@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { toast } from 'sonner';
 import {
   parseICP,
   streamStrategy,
@@ -13,7 +14,6 @@ import {
 import type {
   ICPCriteria,
   CompanyResult,
-  ComposeEmailParams,
   DiscoveredCompanyPreview,
   ApolloPersonPreview,
   StrategyMessage,
@@ -59,6 +59,7 @@ interface ResearchState {
 
   // People search
   peopleResults: Record<string, ApolloPersonPreview[]>;
+  allPeopleResults: Record<string, ApolloPersonPreview[]>;
   isPeopleSearching: boolean;
   enrichingPersonIds: string[];
 
@@ -66,8 +67,7 @@ interface ResearchState {
   statusMessage: string;
   error: string | null;
 
-  // Email composer
-  composeParams: ComposeEmailParams | null;
+  // Email sequences
   emailSequences: Record<string, GeneratedEmailSequence>;
 
   // Abort controller (not serializable, but fine for zustand)
@@ -115,7 +115,6 @@ interface ResearchActions {
   skipToReview: () => void;
 
   // Email
-  setComposeParams: (params: ComposeEmailParams | null) => void;
   saveEmailSequence: (
     companyName: string,
     contactEmail: string,
@@ -177,11 +176,11 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
   results: [],
   researchingCompany: null,
   peopleResults: {},
+  allPeopleResults: {},
   isPeopleSearching: false,
   enrichingPersonIds: [],
   statusMessage: '',
   error: null,
-  composeParams: null,
   emailSequences: {},
   abortController: null,
   sessionId: null,
@@ -438,8 +437,12 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
       const newPeopleResults = Object.fromEntries(
         results.map((r) => [r.company_name, r.ranked_people])
       );
+      const newAllPeopleResults = Object.fromEntries(
+        results.map((r) => [r.company_name, r.all_people])
+      );
       set((state) => ({
         peopleResults: { ...state.peopleResults, ...newPeopleResults },
+        allPeopleResults: { ...state.allPeopleResults, ...newAllPeopleResults },
         isPeopleSearching: false
       }));
       get().saveSession();
@@ -454,7 +457,9 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
     if (enrichingPersonIds.includes(personId)) return;
 
     // Skip API call if already enriched (saves Apollo credits)
-    const existingPerson = peopleResults[companyName]?.find((p) => p.apollo_person_id === personId);
+    const existingPerson =
+      peopleResults[companyName]?.find((p) => p.apollo_person_id === personId) ??
+      get().allPeopleResults[companyName]?.find((p) => p.apollo_person_id === personId);
     if (existingPerson?.is_enriched) return;
 
     set({ enrichingPersonIds: [...enrichingPersonIds, personId] });
@@ -463,28 +468,36 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
       const enriched = await enrichPerson(personId);
 
       set((state) => {
-        const people = state.peopleResults[companyName] ?? [];
-        const updated = people.map((p) =>
-          p.apollo_person_id === personId
-            ? {
-                ...p,
-                last_name: enriched.last_name,
-                email: enriched.email ?? undefined,
-                phone: enriched.phone ?? undefined,
-                linkedin_url: enriched.linkedin_url ?? undefined,
-                is_enriched: true
-              }
-            : p
-        );
+        const enrichData = {
+          last_name: enriched.last_name,
+          email: enriched.email ?? undefined,
+          phone: enriched.phone ?? undefined,
+          linkedin_url: enriched.linkedin_url ?? undefined,
+          is_enriched: true as const
+        };
+        const applyEnrich = (p: ApolloPersonPreview) =>
+          p.apollo_person_id === personId ? { ...p, ...enrichData } : p;
+
+        const rankedPeople = (state.peopleResults[companyName] ?? []).map(applyEnrich);
+        const allPeople = (state.allPeopleResults[companyName] ?? []).map(applyEnrich);
+
+        // If enriched person isn't in rankedPeople (e.g. from contacts modal), append them
+        const inRanked = rankedPeople.some((p) => p.apollo_person_id === personId);
+        const enrichedPerson = allPeople.find((p) => p.apollo_person_id === personId);
+        const finalRanked =
+          !inRanked && enrichedPerson ? [...rankedPeople, enrichedPerson] : rankedPeople;
 
         return {
-          peopleResults: { ...state.peopleResults, [companyName]: updated },
+          peopleResults: { ...state.peopleResults, [companyName]: finalRanked },
+          allPeopleResults: { ...state.allPeopleResults, [companyName]: allPeople },
           enrichingPersonIds: state.enrichingPersonIds.filter((id) => id !== personId)
         };
       });
+      toast.success('Contact unlocked — 1 credit used');
       get().saveSession();
     } catch (err) {
       console.error('Person enrichment failed:', err);
+      toast.error('Failed to unlock contact');
       set((state) => ({
         enrichingPersonIds: state.enrichingPersonIds.filter((id) => id !== personId)
       }));
@@ -505,11 +518,11 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
       results: [],
       researchingCompany: null,
       peopleResults: {},
+      allPeopleResults: {},
       isPeopleSearching: false,
       enrichingPersonIds: [],
       error: null,
       statusMessage: '',
-      composeParams: null,
       emailSequences: {},
       sessionId: null,
       sessionName: 'Untitled Session',
@@ -524,8 +537,6 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
   },
 
   // Email
-  setComposeParams: (params) => set({ composeParams: params }),
-
   saveEmailSequence: (companyName, contactEmail, sequence) => {
     const key = `${companyName}::${contactEmail}`;
     set((state) => ({

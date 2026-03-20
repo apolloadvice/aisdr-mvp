@@ -1,33 +1,31 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Building2,
   DollarSign,
   ExternalLink,
   Linkedin,
-  ChevronDown,
   Users,
-  Crown,
   Mail,
   AtSign,
-  PenSquare,
   Loader2
 } from 'lucide-react';
 import { SignalBadge } from './signal-badge';
 import { CopyButton } from './copy-button.client';
 import { Button } from '@/components/ui/button';
 import { CompanyLogoWithFallback } from '@/components/company-logo';
-import { useResearchStore } from '@/lib/store/research-store';
 import type {
   CompanyResult,
-  ComposeEmailParams,
-  ICPCriteria,
-  TargetContact,
   SourceLink,
   DiscoveredCompanyPreview,
   ApolloPersonPreview
 } from '@/lib/types';
+
+interface ViewContactsInfo {
+  name: string;
+  apolloOrgId: string;
+  result: CompanyResult | null;
+}
 
 export const GRID_COLS = 'lg:min-w-[900px] grid-cols-[1fr_1fr_1.5fr_1.5fr]';
 
@@ -44,168 +42,6 @@ function SourceLinkRow({ source }: { source: SourceLink }) {
       <ExternalLink className="size-3 shrink-0 opacity-50 group-hover:opacity-100" />
       <span className="truncate">{source.title || source.url}</span>
     </a>
-  );
-}
-
-function ContactRow({
-  contact,
-  compact,
-  onCompose,
-  isSent
-}: {
-  contact: TargetContact;
-  compact?: boolean;
-  onCompose?: () => void;
-  isSent?: boolean;
-}) {
-  return (
-    <div className="space-y-0.5">
-      <div className="flex items-center gap-1.5">
-        {contact.is_decision_maker && <Crown className="text-primary size-3 shrink-0" />}
-        <button
-          type="button"
-          onClick={onCompose}
-          className={`hover:text-primary cursor-pointer font-medium transition-colors ${compact ? 'text-xs' : 'text-sm'}`}
-        >
-          {contact.name}
-        </button>
-        <a
-          href={contact.linkedin_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-muted-foreground hover:text-primary transition-colors"
-          title={`Find ${contact.name} on LinkedIn`}
-        >
-          <Linkedin className="size-3" />
-        </a>
-        {isSent && (
-          <span className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-[10px] font-medium">
-            Sent
-          </span>
-        )}
-      </div>
-      <p className="text-muted-foreground text-xs">{contact.title}</p>
-      {contact.email && (
-        <div className="flex items-center gap-1">
-          <AtSign className="text-muted-foreground size-3 shrink-0" />
-          <button
-            type="button"
-            onClick={onCompose}
-            className="text-muted-foreground hover:text-foreground min-w-0 cursor-pointer truncate text-xs transition-colors"
-          >
-            {contact.email}
-          </button>
-          <span className="shrink-0">
-            <CopyButton text={contact.email} />
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function PersonRow({
-  person,
-  isEnriching,
-  onEnrich,
-  onCompose,
-  isSent
-}: {
-  person: ApolloPersonPreview;
-  isEnriching: boolean;
-  onEnrich: () => void;
-  onCompose?: () => void;
-  isSent?: boolean;
-}) {
-  const displayName = person.is_enriched
-    ? `${person.first_name} ${person.last_name}`
-    : `${person.first_name} ${person.last_name_obfuscated}`;
-
-  return (
-    <div className="space-y-0.5">
-      <div className="flex items-center gap-1.5">
-        {person.has_email && <Mail className="text-primary size-3 shrink-0" />}
-        {person.is_enriched && person.email && onCompose ? (
-          <button
-            type="button"
-            onClick={onCompose}
-            className="hover:text-primary cursor-pointer text-sm font-medium transition-colors"
-          >
-            {displayName}
-          </button>
-        ) : (
-          <span className="text-sm font-medium">{displayName}</span>
-        )}
-        {person.is_enriched && person.linkedin_url && (
-          <a
-            href={person.linkedin_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition-colors"
-            title={`View ${person.first_name} on LinkedIn`}
-          >
-            <Linkedin className="size-3" />
-          </a>
-        )}
-        {isSent && (
-          <span className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-[10px] font-medium">
-            Sent
-          </span>
-        )}
-      </div>
-      {person.title && <p className="text-muted-foreground text-xs">{person.title}</p>}
-
-      {person.is_enriched ? (
-        <div className="mt-1 space-y-0.5">
-          {person.email && (
-            <div className="flex items-center gap-1">
-              <AtSign className="text-muted-foreground size-3 shrink-0" />
-              <button
-                type="button"
-                onClick={onCompose}
-                className="text-muted-foreground hover:text-foreground min-w-0 cursor-pointer truncate text-xs transition-colors"
-              >
-                {person.email}
-              </button>
-              <span className="shrink-0">
-                <CopyButton text={person.email} />
-              </span>
-            </div>
-          )}
-          {person.phone && (
-            <div className="flex items-center gap-1">
-              <span className="text-muted-foreground size-3 shrink-0 text-center text-xs">#</span>
-              <span className="text-muted-foreground hover:text-foreground min-w-0 truncate text-xs transition-colors">
-                {person.phone}
-              </span>
-              <span className="shrink-0">
-                <CopyButton text={person.phone} />
-              </span>
-            </div>
-          )}
-        </div>
-      ) : (
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={onEnrich}
-          disabled={isEnriching}
-          className="mt-1.5"
-        >
-          {isEnriching ? (
-            <>
-              <Loader2 className="size-3 animate-spin" />
-              <span className="ml-1">Loading...</span>
-            </>
-          ) : (
-            <>
-              <Users className="size-3" />
-              Get Contact
-            </>
-          )}
-        </Button>
-      )}
-    </div>
   );
 }
 
@@ -244,14 +80,9 @@ function MobileCompanyCard({
   isComplete,
   isResearching,
   hasContacted,
-  decisionMakers,
-  firstContact,
-  composeFor,
   people,
   isPeopleSearching,
-  onEnrichPerson,
-  enrichingPersonIds,
-  contactedEmails
+  onViewContacts
 }: {
   preview: DiscoveredCompanyPreview;
   result: CompanyResult | null;
@@ -259,16 +90,12 @@ function MobileCompanyCard({
   isComplete: boolean;
   isResearching: boolean;
   hasContacted: boolean;
-  decisionMakers: TargetContact[];
-  firstContact: TargetContact | null;
-  composeFor: (contact: TargetContact) => void;
   people?: ApolloPersonPreview[];
   isPeopleSearching?: boolean;
-  onEnrichPerson?: (personId: string, companyName: string) => void;
-  enrichingPersonIds?: string[];
-  contactedEmails?: string[];
+  onViewContacts?: () => void;
 }) {
   const hasPeople = people && people.length > 0;
+  const mobileEnrichedPeople = (people ?? []).filter((p) => p.is_enriched && p.email);
 
   return (
     <div className="bg-card border-border space-y-3 border-b p-4 last:border-b-0 lg:hidden">
@@ -330,74 +157,26 @@ function MobileCompanyCard({
       )}
 
       {/* Contact */}
-      {hasPeople ? (
-        <div className="space-y-2">
-          {people.slice(0, 2).map((person) => (
-            <PersonRow
-              key={person.apollo_person_id}
-              person={person}
-              isEnriching={enrichingPersonIds?.includes(person.apollo_person_id) ?? false}
-              onEnrich={() => onEnrichPerson?.(person.apollo_person_id, preview.name)}
-              onCompose={
-                person.is_enriched && person.email && result
-                  ? () =>
-                      composeFor({
-                        name: `${person.first_name} ${person.last_name}`,
-                        title: person.title ?? '',
-                        email: person.email ?? null,
-                        linkedin_url: person.linkedin_url ?? '',
-                        is_decision_maker: false
-                      })
-                  : undefined
-              }
-              isSent={
-                person.is_enriched && person.email ? contactedEmails?.includes(person.email) : false
-              }
-            />
-          ))}
-        </div>
-      ) : isComplete && result ? (
-        <div className="space-y-2">
-          {decisionMakers.length > 0 ? (
-            decisionMakers
-              .slice(0, 1)
-              .map((dm, i) => (
-                <ContactRow
-                  key={i}
-                  contact={dm}
-                  compact
-                  onCompose={() => composeFor(dm)}
-                  isSent={dm.email ? contactedEmails?.includes(dm.email) : false}
-                />
-              ))
-          ) : result.contacts.length > 0 ? (
-            <ContactRow
-              contact={result.contacts[0]}
-              compact
-              onCompose={() => composeFor(result.contacts[0])}
-              isSent={
-                result.contacts[0].email
-                  ? contactedEmails?.includes(result.contacts[0].email)
-                  : false
-              }
-            />
-          ) : null}
-          {firstContact && (
-            <Button
-              variant="outline"
-              size="xs"
-              onClick={() => composeFor(firstContact)}
-              className="w-full"
-            >
-              <PenSquare className="size-3" />
-              Compose Email
-            </Button>
-          )}
-        </div>
-      ) : isPeopleSearching || isResearching ? (
+      {isPeopleSearching || isResearching ? (
         <div className="flex items-center gap-2">
           <Loader2 className="text-muted-foreground size-3 animate-spin" />
           <span className="text-muted-foreground text-xs">Researching...</span>
+        </div>
+      ) : (isComplete || hasPeople) && preview.apollo_org_id ? (
+        <div className="space-y-2">
+          {mobileEnrichedPeople.length > 0 &&
+            mobileEnrichedPeople.map((person) => (
+              <div key={person.apollo_person_id} className="flex items-center gap-1.5">
+                <Mail className="text-primary size-3 shrink-0" />
+                <span className="truncate text-sm font-medium">
+                  {person.first_name} {person.last_name}
+                </span>
+              </div>
+            ))}
+          <Button variant="outline" size="xs" onClick={() => onViewContacts?.()} className="w-full">
+            <Users className="size-3" />
+            View Contacts
+          </Button>
         </div>
       ) : null}
 
@@ -421,7 +200,7 @@ export function CompanyRow({
   preview,
   result,
   status,
-  onComposeEmail,
+  onViewContacts,
   people,
   isPeopleSearching,
   onEnrichPerson,
@@ -431,43 +210,28 @@ export function CompanyRow({
   preview: DiscoveredCompanyPreview;
   result: CompanyResult | null;
   status: RowStatus;
-  onComposeEmail?: (params: ComposeEmailParams) => void;
+  onViewContacts?: (info: ViewContactsInfo) => void;
   people?: ApolloPersonPreview[];
   isPeopleSearching?: boolean;
   onEnrichPerson?: (personId: string, companyName: string) => void;
   enrichingPersonIds?: string[];
   contactedEmails?: string[];
 }) {
-  const [contactsOpen, setContactsOpen] = useState(false);
-  const icp = useResearchStore((s) => s.icp);
   const isComplete = status === 'complete' && result !== null;
   const isResearching = status === 'researching';
   const hasContacted = contactedEmails && contactedEmails.length > 0;
 
-  const composeFor = (contact: TargetContact) => {
-    if (!result) return;
-    const fallbackIcp: ICPCriteria = icp ?? {
-      description: '',
-      industry_keywords: [],
-      min_employees: null,
-      max_employees: null,
-      min_funding_amount: null,
-      funding_stages: [],
-      hiring_signals: [],
-      tech_keywords: [],
-      company_examples: []
-    };
-    onComposeEmail?.({
-      company: result,
-      contact,
-      icp: fallbackIcp
+  const handleViewContacts = () => {
+    if (!preview.apollo_org_id) return;
+    onViewContacts?.({
+      name: preview.name,
+      apolloOrgId: preview.apollo_org_id,
+      result
     });
   };
 
-  const decisionMakers = result?.contacts.filter((c) => c.is_decision_maker) ?? [];
-  const otherContacts = result?.contacts.filter((c) => !c.is_decision_maker) ?? [];
-  const firstContact = decisionMakers[0] ?? result?.contacts[0];
   const hasPeople = people && people.length > 0;
+  const enrichedPeople = (people ?? []).filter((p) => p.is_enriched && p.email);
 
   const allSources = result
     ? [...result.sources.funding, ...result.sources.news, ...result.sources.jobs]
@@ -483,14 +247,9 @@ export function CompanyRow({
         isComplete={isComplete}
         isResearching={isResearching}
         hasContacted={!!hasContacted}
-        decisionMakers={decisionMakers}
-        firstContact={firstContact ?? null}
-        composeFor={composeFor}
         people={people}
         isPeopleSearching={isPeopleSearching}
-        onEnrichPerson={onEnrichPerson}
-        enrichingPersonIds={enrichingPersonIds}
-        contactedEmails={contactedEmails}
+        onViewContacts={handleViewContacts}
       />
       {/* Desktop grid row */}
       <div className={`bg-card border-border hidden ${GRID_COLS} border-b last:border-b-0 lg:grid`}>
@@ -591,130 +350,58 @@ export function CompanyRow({
         </div>
 
         <div className="border-border min-w-0 border-r">
-          {hasPeople ? (
-            <div className="space-y-3 p-4">
-              {people.map((person) => (
-                <PersonRow
-                  key={person.apollo_person_id}
-                  person={person}
-                  isEnriching={enrichingPersonIds?.includes(person.apollo_person_id) ?? false}
-                  onEnrich={() => onEnrichPerson?.(person.apollo_person_id, preview.name)}
-                  onCompose={
-                    person.is_enriched && person.email && result
-                      ? () =>
-                          composeFor({
-                            name: `${person.first_name} ${person.last_name}`,
-                            title: person.title ?? '',
-                            email: person.email ?? null,
-                            linkedin_url: person.linkedin_url ?? '',
-                            is_decision_maker: false
-                          })
-                      : undefined
-                  }
-                  isSent={
-                    person.is_enriched && person.email
-                      ? contactedEmails?.includes(person.email)
-                      : false
-                  }
-                />
-              ))}
-              <a
-                href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(preview.name)}&origin=GLOBAL_SEARCH_HEADER`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary inline-flex items-center gap-1.5 text-xs transition-colors"
-              >
-                <Linkedin className="size-3" />
-                Browse all at {preview.name}
-              </a>
-            </div>
-          ) : isPeopleSearching ? (
+          {isPeopleSearching ? (
             <PendingColumn isResearching={true} />
-          ) : !preview.apollo_org_id ? (
+          ) : !preview.apollo_org_id && !hasPeople ? (
             <div className="flex items-center p-4">
               <p className="text-muted-foreground text-xs">No contacts available</p>
             </div>
-          ) : isComplete && result ? (
+          ) : isComplete || hasPeople ? (
             <div className="space-y-3 p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1 space-y-2">
-                  {decisionMakers.length > 0 ? (
-                    decisionMakers.map((dm, i) => (
-                      <ContactRow
-                        key={i}
-                        contact={dm}
-                        onCompose={() => composeFor(dm)}
-                        isSent={dm.email ? contactedEmails?.includes(dm.email) : false}
-                      />
-                    ))
-                  ) : result.contacts.length > 0 ? (
-                    <ContactRow
-                      contact={result.contacts[0]}
-                      onCompose={() => composeFor(result.contacts[0])}
-                      isSent={
-                        result.contacts[0].email
-                          ? contactedEmails?.includes(result.contacts[0].email)
-                          : false
-                      }
-                    />
-                  ) : (
-                    <p className="text-muted-foreground text-xs">No contacts found</p>
-                  )}
-                </div>
-                {firstContact && (
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    onClick={() => composeFor(firstContact)}
-                    label="Compose email"
-                    className="text-muted-foreground hover:text-primary shrink-0"
-                  >
-                    <PenSquare className="size-3.5" />
-                  </Button>
-                )}
-              </div>
-
-              {otherContacts.length > 0 && (
-                <div>
-                  <button
-                    onClick={() => setContactsOpen(!contactsOpen)}
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-xs transition-colors"
-                  >
-                    <Users className="size-3" />
-                    <span>{otherContacts.length} more</span>
-                    <ChevronDown
-                      className={`size-3 transition-transform duration-200 ${contactsOpen ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      contactsOpen ? 'mt-2 max-h-80 opacity-100' : 'max-h-0 opacity-0'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      {otherContacts.map((contact, i) => (
-                        <ContactRow
-                          key={i}
-                          contact={contact}
-                          compact
-                          onCompose={() => composeFor(contact)}
-                          isSent={contact.email ? contactedEmails?.includes(contact.email) : false}
-                        />
-                      ))}
+              {enrichedPeople.length > 0 && (
+                <div className="space-y-2">
+                  {enrichedPeople.map((person) => (
+                    <div key={person.apollo_person_id} className="space-y-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="text-primary size-3 shrink-0" />
+                        <span className="truncate text-sm font-medium">
+                          {person.first_name} {person.last_name}
+                        </span>
+                        {person.linkedin_url && (
+                          <a
+                            href={person.linkedin_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            <Linkedin className="size-3" />
+                          </a>
+                        )}
+                        {contactedEmails?.includes(person.email!) && (
+                          <span className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-[10px] font-medium">
+                            Sent
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-muted-foreground text-xs">{person.title}</p>
+                      <div className="flex items-center gap-1">
+                        <AtSign className="text-muted-foreground size-3 shrink-0" />
+                        <span className="text-muted-foreground truncate text-xs">
+                          {person.email}
+                        </span>
+                        <CopyButton text={person.email!} />
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               )}
 
-              <a
-                href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(result.company_name)}&origin=GLOBAL_SEARCH_HEADER`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary inline-flex items-center gap-1.5 text-xs transition-colors"
-              >
-                <Linkedin className="size-3" />
-                Browse all at {result.company_name}
-              </a>
+              {preview.apollo_org_id && (
+                <Button variant="outline" size="xs" onClick={handleViewContacts} className="w-full">
+                  <Users className="size-3" />
+                  View Contacts
+                </Button>
+              )}
             </div>
           ) : (
             <PendingColumn isResearching={isResearching} />
