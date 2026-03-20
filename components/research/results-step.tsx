@@ -47,7 +47,6 @@ function FilterSortBar({
 }) {
   return (
     <div className="mb-3 flex flex-wrap items-center gap-2">
-      <Label className="text-muted-foreground text-xs">Filter</Label>
       <div className="flex flex-wrap gap-1.5">
         {SIGNAL_TYPES.map((type) => (
           <button
@@ -229,7 +228,10 @@ export function ResultsStep() {
   const setStep = useResearchStore((s) => s.setStep);
   const candidates = useResearchStore((s) => s.candidates);
   const selectedCompanies = useResearchStore((s) => s.selectedCompanies);
-
+  const peopleResults = useResearchStore((s) => s.peopleResults);
+  const isPeopleSearching = useResearchStore((s) => s.isPeopleSearching);
+  const enrichingPersonIds = useResearchStore((s) => s.enrichingPersonIds);
+  const enrichPersonAction = useResearchStore((s) => s.enrichPersonAction);
   const getContactedEmails = useResearchStore((s) => s.getContactedEmails);
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set(SIGNAL_TYPES));
   const [sort, setSort] = useState<SortOption>('signals');
@@ -324,7 +326,7 @@ export function ResultsStep() {
       {icp && <ICPSummary icp={icp} onEditCriteria={() => setStep('review')} />}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-4 w-full justify-start">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto">
           <TabsTrigger value="research">
             <LayoutGrid className="size-3" />
             Research
@@ -398,14 +400,16 @@ export function ResultsStep() {
 
               <div className="border-border bg-card overflow-x-auto rounded-(--card-radius) border lg:overflow-x-auto">
                 <div className={`bg-muted/50 border-border hidden ${GRID_COLS} border-b lg:grid`}>
-                  {['Company', 'Buying Signal', 'Overview & Fit'].map((label, i, arr) => (
-                    <div
-                      key={label}
-                      className={`text-muted-foreground section-label min-w-0 px-4 py-2.5 ${i < arr.length - 1 ? 'border-border border-r' : ''}`}
-                    >
-                      {label}
-                    </div>
-                  ))}
+                  {['Company', 'Target Person', 'Buying Signal', 'Overview & Fit'].map(
+                    (label, i, arr) => (
+                      <div
+                        key={label}
+                        className={`text-muted-foreground section-label min-w-0 px-4 py-2.5 ${i < arr.length - 1 ? 'border-border border-r' : ''}`}
+                      >
+                        {label}
+                      </div>
+                    )
+                  )}
                 </div>
 
                 {displayCompanies.map((candidate) => {
@@ -428,6 +432,10 @@ export function ResultsStep() {
                       result={result}
                       status={status}
                       onViewContacts={openCompanyTab}
+                      people={peopleResults[candidate.name]}
+                      isPeopleSearching={isPeopleSearching}
+                      onEnrichPerson={enrichPersonAction}
+                      enrichingPersonIds={enrichingPersonIds}
                       contactedEmails={getContactedEmails(candidate.name)}
                     />
                   );
@@ -446,20 +454,40 @@ export function ResultsStep() {
         </TabsContent>
 
         {/* Company contact tabs — each forceMount to preserve state */}
-        {openTabs.map((tab) => (
-          <TabsContent
-            key={tab.name}
-            value={tab.name}
-            forceMount
-            className="data-[state=inactive]:hidden"
-          >
-            <ContactScreen
-              companyName={tab.name}
-              apolloOrgId={tab.apolloOrgId}
-              result={tab.result}
-            />
-          </TabsContent>
-        ))}
+        {openTabs.map((tab) => {
+          const companyIndex = displayCompanies.findIndex((c) => c.name === tab.name);
+          const nextCompany =
+            companyIndex >= 0 && companyIndex < displayCompanies.length - 1
+              ? displayCompanies[companyIndex + 1]
+              : null;
+          const nextResult = nextCompany ? (resultMap.get(nextCompany.name) ?? null) : null;
+
+          return (
+            <TabsContent
+              key={tab.name}
+              value={tab.name}
+              forceMount
+              className="data-[state=inactive]:hidden"
+            >
+              <ContactScreen
+                companyName={tab.name}
+                apolloOrgId={tab.apolloOrgId}
+                result={tab.result}
+                onNextCompany={
+                  nextCompany
+                    ? () =>
+                        openCompanyTab({
+                          name: nextCompany.name,
+                          apolloOrgId: nextCompany.apollo_org_id ?? '',
+                          result: nextResult
+                        })
+                    : undefined
+                }
+                nextCompanyName={nextCompany?.name}
+              />
+            </TabsContent>
+          );
+        })}
       </Tabs>
     </>
   );

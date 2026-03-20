@@ -57,6 +57,12 @@ export interface CompanyResearchResult {
   industry: string;
   funding_stage: string;
   amount_raised: string;
+  inferred_contacts: {
+    name: string;
+    title: string;
+    email: string | null;
+    is_decision_maker: boolean;
+  }[];
   sources: {
     jobs: SourceLink[];
     funding: SourceLink[];

@@ -90,7 +90,13 @@ function EmailPreview({
   );
 }
 
-export function EmailEditorInline({ params }: { params: ComposeEmailParams }) {
+export function EmailEditorInline({
+  params,
+  onBack
+}: {
+  params: ComposeEmailParams;
+  onBack: () => void;
+}) {
   const [toEmail, setToEmail] = useState('');
   const [steps, setSteps] = useState<EmailTriple | null>(null);
   const [activeStep, setActiveStep] = useState(0);
@@ -219,6 +225,17 @@ export function EmailEditorInline({ params }: { params: ComposeEmailParams }) {
     }
   };
 
+  const handleBack = () => {
+    if (steps) {
+      const updated = [...steps] as EmailTriple;
+      updated[activeStep] = { subject, body };
+      useResearchStore
+        .getState()
+        .saveEmailSequence(company.company_name, contactKey, { emails: updated });
+    }
+    onBack();
+  };
+
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
@@ -307,7 +324,11 @@ export function EmailEditorInline({ params }: { params: ComposeEmailParams }) {
           </div>
 
           {/* Footer */}
-          <div className="border-border flex items-center gap-2 border-t px-4 py-3">
+          <div className="border-border flex flex-wrap items-center gap-2 border-t px-4 py-3">
+            <Button variant="ghost" size="sm" onClick={handleBack}>
+              <ChevronLeft className="size-3.5" />
+              Contacts
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -316,18 +337,13 @@ export function EmailEditorInline({ params }: { params: ComposeEmailParams }) {
             >
               Preview
             </Button>
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={handleRegenerate}
-              disabled={generating}
-              label={generating ? 'Generating...' : 'Regenerate'}
-            >
+            <Button variant="outline" size="sm" onClick={handleRegenerate} disabled={generating}>
               {generating ? (
                 <Loader2 className="size-3.5 animate-spin" />
               ) : (
                 <RefreshCw className="size-3.5" />
               )}
+              {generating ? 'Generating...' : 'Regenerate'}
             </Button>
             <div className="ml-auto flex items-center gap-2">
               <div className="flex items-center gap-1">
@@ -362,16 +378,17 @@ export function EmailEditorInline({ params }: { params: ComposeEmailParams }) {
                 </button>
               )}
               <Button
-                size="icon-sm"
+                size="sm"
                 onClick={() => setConfirmOpen(true)}
                 disabled={!gmailConnected || !toEmail || generating || sending}
-                label={!gmailConnected ? 'Connect Gmail to send' : 'Send email'}
+                title={!gmailConnected ? 'Connect Gmail in Settings to send' : undefined}
               >
                 {sending ? (
                   <Loader2 className="size-3.5 animate-spin" />
                 ) : (
                   <Send className="size-3.5" />
                 )}
+                {sending ? 'Sending...' : 'Send'}
               </Button>
 
               <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>

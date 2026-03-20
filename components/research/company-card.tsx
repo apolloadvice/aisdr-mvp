@@ -1,10 +1,25 @@
 'use client';
 
-import { Building2, DollarSign, ExternalLink, Linkedin, Users, Loader2 } from 'lucide-react';
+import {
+  Building2,
+  DollarSign,
+  ExternalLink,
+  Linkedin,
+  Users,
+  Mail,
+  AtSign,
+  Loader2
+} from 'lucide-react';
 import { SignalBadge } from './signal-badge';
+import { CopyButton } from './copy-button.client';
 import { Button } from '@/components/ui/button';
 import { CompanyLogoWithFallback } from '@/components/company-logo';
-import type { CompanyResult, SourceLink, DiscoveredCompanyPreview } from '@/lib/types';
+import type {
+  CompanyResult,
+  SourceLink,
+  DiscoveredCompanyPreview,
+  ApolloPersonPreview
+} from '@/lib/types';
 
 interface ViewContactsInfo {
   name: string;
@@ -12,7 +27,7 @@ interface ViewContactsInfo {
   result: CompanyResult | null;
 }
 
-export const GRID_COLS = 'lg:min-w-[700px] grid-cols-[1.2fr_1.5fr_1.5fr]';
+export const GRID_COLS = 'lg:min-w-[900px] grid-cols-[1fr_1fr_1.5fr_1.5fr]';
 
 type RowStatus = 'pending' | 'researching' | 'complete' | 'error';
 
@@ -65,6 +80,8 @@ function MobileCompanyCard({
   isComplete,
   isResearching,
   hasContacted,
+  people,
+  isPeopleSearching,
   onViewContacts
 }: {
   preview: DiscoveredCompanyPreview;
@@ -73,8 +90,13 @@ function MobileCompanyCard({
   isComplete: boolean;
   isResearching: boolean;
   hasContacted: boolean;
+  people?: ApolloPersonPreview[];
+  isPeopleSearching?: boolean;
   onViewContacts?: () => void;
 }) {
+  const hasPeople = people && people.length > 0;
+  const mobileEnrichedPeople = (people ?? []).filter((p) => p.is_enriched && p.email);
+
   return (
     <div className="bg-card border-border space-y-3 border-b p-4 last:border-b-0 lg:hidden">
       {/* Company header */}
@@ -135,12 +157,28 @@ function MobileCompanyCard({
       )}
 
       {/* Contact */}
-      {preview.apollo_org_id && (
-        <Button size="xs" onClick={() => onViewContacts?.()} className="w-full">
-          <Users className="size-3" />
-          View Contacts
-        </Button>
-      )}
+      {isPeopleSearching || isResearching ? (
+        <div className="flex items-center gap-2">
+          <Loader2 className="text-muted-foreground size-3 animate-spin" />
+          <span className="text-muted-foreground text-xs">Researching...</span>
+        </div>
+      ) : (isComplete || hasPeople) && preview.apollo_org_id ? (
+        <div className="space-y-2">
+          {mobileEnrichedPeople.length > 0 &&
+            mobileEnrichedPeople.map((person) => (
+              <div key={person.apollo_person_id} className="flex items-center gap-1.5">
+                <Mail className="text-primary size-3 shrink-0" />
+                <span className="truncate text-sm font-medium">
+                  {person.first_name} {person.last_name}
+                </span>
+              </div>
+            ))}
+          <Button variant="outline" size="xs" onClick={() => onViewContacts?.()} className="w-full">
+            <Users className="size-3" />
+            View Contacts
+          </Button>
+        </div>
+      ) : null}
 
       {/* Overview */}
       {isComplete && result && (
@@ -163,12 +201,20 @@ export function CompanyRow({
   result,
   status,
   onViewContacts,
+  people,
+  isPeopleSearching,
+  onEnrichPerson,
+  enrichingPersonIds,
   contactedEmails
 }: {
   preview: DiscoveredCompanyPreview;
   result: CompanyResult | null;
   status: RowStatus;
   onViewContacts?: (info: ViewContactsInfo) => void;
+  people?: ApolloPersonPreview[];
+  isPeopleSearching?: boolean;
+  onEnrichPerson?: (personId: string, companyName: string) => void;
+  enrichingPersonIds?: string[];
   contactedEmails?: string[];
 }) {
   const isComplete = status === 'complete' && result !== null;
@@ -184,6 +230,9 @@ export function CompanyRow({
     });
   };
 
+  const hasPeople = people && people.length > 0;
+  const enrichedPeople = (people ?? []).filter((p) => p.is_enriched && p.email);
+
   const allSources = result
     ? [...result.sources.funding, ...result.sources.news, ...result.sources.jobs]
     : [];
@@ -198,6 +247,8 @@ export function CompanyRow({
         isComplete={isComplete}
         isResearching={isResearching}
         hasContacted={!!hasContacted}
+        people={people}
+        isPeopleSearching={isPeopleSearching}
         onViewContacts={handleViewContacts}
       />
       {/* Desktop grid row */}
@@ -296,12 +347,64 @@ export function CompanyRow({
               ))}
             </div>
           )}
+        </div>
 
-          {preview.apollo_org_id && (
-            <Button size="xs" onClick={handleViewContacts} className="w-full">
-              <Users className="size-3" />
-              View Contacts
-            </Button>
+        <div className="border-border min-w-0 border-r">
+          {isPeopleSearching ? (
+            <PendingColumn isResearching={true} />
+          ) : !preview.apollo_org_id && !hasPeople ? (
+            <div className="flex items-center p-4">
+              <p className="text-muted-foreground text-xs">No contacts available</p>
+            </div>
+          ) : isComplete || hasPeople ? (
+            <div className="space-y-3 p-4">
+              {enrichedPeople.length > 0 && (
+                <div className="space-y-2">
+                  {enrichedPeople.map((person) => (
+                    <div key={person.apollo_person_id} className="space-y-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="text-primary size-3 shrink-0" />
+                        <span className="truncate text-sm font-medium">
+                          {person.first_name} {person.last_name}
+                        </span>
+                        {person.linkedin_url && (
+                          <a
+                            href={person.linkedin_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            <Linkedin className="size-3" />
+                          </a>
+                        )}
+                        {contactedEmails?.includes(person.email!) && (
+                          <span className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-[10px] font-medium">
+                            Sent
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-muted-foreground text-xs">{person.title}</p>
+                      <div className="flex items-center gap-1">
+                        <AtSign className="text-muted-foreground size-3 shrink-0" />
+                        <span className="text-muted-foreground truncate text-xs">
+                          {person.email}
+                        </span>
+                        <CopyButton text={person.email!} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {preview.apollo_org_id && (
+                <Button variant="outline" size="xs" onClick={handleViewContacts} className="w-full">
+                  <Users className="size-3" />
+                  View Contacts
+                </Button>
+              )}
+            </div>
+          ) : (
+            <PendingColumn isResearching={isResearching} />
           )}
         </div>
 

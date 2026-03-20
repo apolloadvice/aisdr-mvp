@@ -120,6 +120,15 @@ export async function researchConfirmedCompanies(
 
       const research = await Promise.race([researchPromise, timeoutPromise]);
 
+      // Apollo people search handles contacts — skip Claude-inferred ones
+      const contacts: {
+        name: string;
+        title: string;
+        linkedin_url: string;
+        email: string | null;
+        is_decision_maker: boolean;
+      }[] = [];
+
       // Prefer discovery-provided URLs, fall back to research results
       const websiteUrl = candidate?.website || research.website || null;
       const linkedinUrl =
@@ -139,6 +148,7 @@ export async function researchConfirmedCompanies(
         signals: research.signals,
         match_reason: research.match_reason,
         company_overview: research.company_overview,
+        contacts,
         sources: research.sources
       };
 

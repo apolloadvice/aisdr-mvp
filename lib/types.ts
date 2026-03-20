@@ -41,6 +41,7 @@ export interface CompanyResult {
   signals: CompanySignal[];
   match_reason: string;
   company_overview: string;
+  contacts: TargetContact[];
   /** Raw sources grouped by category for linking in the UI */
   sources: {
     jobs: SourceLink[];

@@ -32,7 +32,6 @@ function PersonCard({
   isEnriching,
   isRanked,
   isSent,
-  isSelected,
   onEnrich,
   onCompose
 }: {
@@ -40,7 +39,6 @@ function PersonCard({
   isEnriching: boolean;
   isRanked: boolean;
   isSent: boolean;
-  isSelected: boolean;
   onEnrich: () => void;
   onCompose?: () => void;
 }) {
@@ -49,11 +47,7 @@ function PersonCard({
     : `${person.first_name} ${person.last_name_obfuscated}`;
 
   return (
-    <div
-      className={`flex items-start justify-between gap-3 rounded-lg border p-3 transition-colors ${
-        isSelected ? 'border-primary bg-primary/5' : 'border-border'
-      }`}
-    >
+    <div className="border-border flex items-start justify-between gap-3 rounded-lg border p-3">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           {isRanked && <Crown className="text-primary size-3 shrink-0" />}
@@ -151,8 +145,7 @@ export function ContactList({
   enrichingPersonIds,
   onEnrichPerson,
   onSelectContact,
-  contactedEmails,
-  selectedEmail
+  contactedEmails
 }: {
   companyName: string;
   apolloOrgId: string;
@@ -162,7 +155,6 @@ export function ContactList({
   onEnrichPerson: (personId: string, companyName: string) => void;
   onSelectContact: (params: ComposeEmailParams) => void;
   contactedEmails: string[];
-  selectedEmail: string | null;
 }) {
   const [search, setSearch] = useState('');
   const [people, setPeople] = useState<ApolloPersonPreview[]>([]);
@@ -286,9 +278,6 @@ export function ContactList({
                 person={person}
                 isEnriching={enrichingPersonIds.includes(person.apollo_person_id)}
                 isRanked={rankedIds.has(person.apollo_person_id)}
-                isSelected={
-                  !!selectedEmail && !!person.is_enriched && person.email === selectedEmail
-                }
                 isSent={
                   person.is_enriched && person.email
                     ? contactedEmails.includes(person.email)
