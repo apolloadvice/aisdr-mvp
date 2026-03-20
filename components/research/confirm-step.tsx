@@ -57,18 +57,20 @@ export function ConfirmStep() {
   const [adding, setAdding] = useState(false);
   const [newCompany, setNewCompany] = useState('');
 
+  const MAX_SELECTED = 5;
   const selectedSet = new Set(selected);
+  const atLimit = selected.length >= MAX_SELECTED;
 
   const toggle = (name: string) => {
     if (selectedSet.has(name)) {
       setSelectedCompanies(selected.filter((n) => n !== name));
-    } else {
+    } else if (!atLimit) {
       setSelectedCompanies([...selected, name]);
     }
   };
 
   const addCustom = () => {
-    if (newCompany.trim() && !selectedSet.has(newCompany.trim())) {
+    if (newCompany.trim() && !selectedSet.has(newCompany.trim()) && !atLimit) {
       setSelectedCompanies([...selected, newCompany.trim()]);
       setNewCompany('');
       setAdding(false);
@@ -108,7 +110,7 @@ export function ConfirmStep() {
                   setSelectedCompanies(customNames);
                 } else {
                   const allNames = [...candidates.map((c) => c.name), ...customNames];
-                  setSelectedCompanies([...new Set(allNames)]);
+                  setSelectedCompanies([...new Set(allNames)].slice(0, MAX_SELECTED));
                 }
               }}
             >
@@ -116,7 +118,11 @@ export function ConfirmStep() {
             </button>
           )}
           <span className="text-muted-foreground section-label">Company</span>
-          <span className="text-muted-foreground ml-auto text-xs">{selected.length} selected</span>
+          <span
+            className={`ml-auto text-xs ${atLimit ? 'text-primary font-medium' : 'text-muted-foreground'}`}
+          >
+            {selected.length}/{MAX_SELECTED} selected
+          </span>
         </div>
 
         {/* Skeleton rows while discovering */}
@@ -128,10 +134,13 @@ export function ConfirmStep() {
           <button
             key={company.name}
             onClick={() => toggle(company.name)}
+            disabled={!selectedSet.has(company.name) && atLimit}
             className={`animate-in fade-in slide-in-from-bottom-2 fill-mode-both border-border flex w-full items-start gap-4 border-b px-4 py-3 text-left transition-colors duration-300 last:border-b-0 ${
               selectedSet.has(company.name)
                 ? 'bg-card hover:bg-muted/30'
-                : 'bg-card opacity-50 hover:opacity-70'
+                : atLimit
+                  ? 'bg-card cursor-not-allowed opacity-30'
+                  : 'bg-card opacity-50 hover:opacity-70'
             }`}
             style={{ animationDelay: `${i * 80}ms` }}
           >
@@ -224,7 +233,7 @@ export function ConfirmStep() {
                 className="h-8 flex-1 text-sm"
                 autoFocus
               />
-              <Button size="sm" onClick={addCustom} disabled={!newCompany.trim()}>
+              <Button size="sm" onClick={addCustom} disabled={!newCompany.trim() || atLimit}>
                 Add
               </Button>
               <Button size="sm" variant="ghost" onClick={() => setAdding(false)}>
@@ -234,7 +243,12 @@ export function ConfirmStep() {
           ) : (
             <button
               onClick={() => setAdding(true)}
-              className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
+              disabled={atLimit}
+              className={`flex items-center gap-2 text-sm transition-colors ${
+                atLimit
+                  ? 'text-muted-foreground/40 cursor-not-allowed'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               <Plus className="size-3.5" />
               Add a company

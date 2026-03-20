@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sessionCreateBodySchema, parseBody } from '@/lib/validation';
 
 export async function GET() {
   const supabase = await createClient();
@@ -45,19 +46,10 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body: Record<string, unknown> = await req.json();
+  const parsed = parseBody(sessionCreateBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  const insert: Record<string, unknown> = { user_id: user.id };
-  if (typeof body.name === 'string') insert.name = body.name;
-  if (typeof body.transcript === 'string') insert.transcript = body.transcript;
-  if (typeof body.step === 'string') insert.step = body.step;
-  if (body.icp) insert.icp = body.icp;
-  if (Array.isArray(body.strategy_messages)) insert.strategy_messages = body.strategy_messages;
-  if (Array.isArray(body.candidates)) insert.candidates = body.candidates;
-  if (Array.isArray(body.selected_companies)) insert.selected_companies = body.selected_companies;
-  if (Array.isArray(body.results)) insert.results = body.results;
-  if (body.people_results && typeof body.people_results === 'object')
-    insert.people_results = body.people_results;
+  const insert: Record<string, unknown> = { user_id: user.id, ...parsed.data };
 
   const { data, error } = await supabase.from('research_sessions').insert(insert).select().single();
 

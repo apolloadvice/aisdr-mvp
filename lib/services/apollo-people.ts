@@ -76,7 +76,20 @@ export async function apolloPeopleSearch(
     throw new Error(`Apollo People API error (${response.status}): ${responseText}`);
   }
 
-  const data: unknown = JSON.parse(responseText);
+  let data: unknown;
+  try {
+    // Apollo sometimes returns trailing content after the JSON object.
+    // Extract the first complete JSON object to handle this safely.
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON object found');
+    }
+    data = JSON.parse(jsonMatch[0]);
+  } catch (parseErr) {
+    throw new Error(
+      `Apollo People API returned invalid JSON (status ${response.status}): ${responseText.slice(0, 200)}`
+    );
+  }
   if (!isApolloPeopleSearchResponse(data)) {
     throw new Error('Unexpected Apollo People response shape');
   }
@@ -138,7 +151,16 @@ export async function apolloPersonEnrich(personId: string): Promise<{
     throw new Error(`Apollo People Match API error (${response.status}): ${responseText}`);
   }
 
-  const data: unknown = JSON.parse(responseText);
+  let data: unknown;
+  try {
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON object found');
+    data = JSON.parse(jsonMatch[0]);
+  } catch {
+    throw new Error(
+      `Apollo People Match API returned invalid JSON (status ${response.status}): ${responseText.slice(0, 200)}`
+    );
+  }
   if (!isApolloPersonMatchResponse(data)) {
     throw new Error('Unexpected Apollo People Match response shape');
   }

@@ -1,40 +1,14 @@
 import { NextRequest } from 'next/server';
 import { apolloPeopleSearch } from '@/lib/services/apollo-people';
 import { rankPeopleForCompany } from '@/lib/services/people-ranking';
-import type { ICPCriteria, PeopleSearchResult } from '@/lib/types';
-
-function isICPCriteria(value: unknown): value is ICPCriteria {
-  if (typeof value !== 'object' || value === null) return false;
-  const obj = value as Record<string, unknown>;
-  return typeof obj.description === 'string' && Array.isArray(obj.industry_keywords);
-}
-
-interface CompanyEntry {
-  name: string;
-  apollo_org_id: string;
-}
-
-function isCompanyEntryArray(value: unknown): value is CompanyEntry[] {
-  if (!Array.isArray(value)) return false;
-  return value.every(
-    (item) =>
-      typeof item === 'object' &&
-      item !== null &&
-      typeof (item as Record<string, unknown>).name === 'string' &&
-      typeof (item as Record<string, unknown>).apollo_org_id === 'string'
-  );
-}
+import { peopleSearchBodySchema, parseBody } from '@/lib/validation';
+import type { PeopleSearchResult } from '@/lib/types';
 
 export async function POST(req: NextRequest) {
-  const body: Record<string, unknown> = await req.json();
+  const parsed = parseBody(peopleSearchBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  const orgIds = Array.isArray(body.org_ids) ? (body.org_ids as string[]) : undefined;
-  const icp = isICPCriteria(body.icp) ? body.icp : undefined;
-  const companies = isCompanyEntryArray(body.companies) ? body.companies : undefined;
-
-  if (!orgIds || !icp || !companies) {
-    return Response.json({ error: 'org_ids, icp, and companies are required' }, { status: 400 });
-  }
+  const { org_ids: orgIds, icp, companies } = parsed.data;
 
   if (!process.env.APOLLO_API_KEY) {
     return Response.json({ error: 'APOLLO_API_KEY is not set' }, { status: 500 });
@@ -47,24 +21,17 @@ export async function POST(req: NextRequest) {
   try {
     const peopleByOrg = await apolloPeopleSearch(orgIds);
 
-    // Build org name → company entry lookup
-    const orgIdToCompany = new Map<string, CompanyEntry>();
-    for (const company of companies) {
-      orgIdToCompany.set(company.apollo_org_id, company);
-    }
-
-    // Match people to companies by organization_name and rank
     const results: PeopleSearchResult[] = [];
 
     for (const company of companies) {
-      // Apollo returns people grouped by org name — find matching group
       const people = peopleByOrg.get(company.name) ?? [];
 
       if (people.length === 0) {
         results.push({
           company_name: company.name,
           apollo_org_id: company.apollo_org_id,
-          ranked_people: []
+          ranked_people: [],
+          all_people: []
         });
         continue;
       }
@@ -74,7 +41,8 @@ export async function POST(req: NextRequest) {
       results.push({
         company_name: company.name,
         apollo_org_id: company.apollo_org_id,
-        ranked_people: ranked
+        ranked_people: ranked,
+        all_people: people
       });
     }
 

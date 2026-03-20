@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getGmailClient, sendEmail } from '@/lib/services/gmail';
+import { emailSendBodySchema, parseBody } from '@/lib/validation';
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -12,17 +13,10 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body: Record<string, unknown> = await req.json();
-  const to = typeof body.to === 'string' ? body.to : '';
-  const subject = typeof body.subject === 'string' ? body.subject : '';
-  const emailBody = typeof body.body === 'string' ? body.body : '';
-  const companyName = typeof body.companyName === 'string' ? body.companyName : '';
-  const contactName = typeof body.contactName === 'string' ? body.contactName : '';
-  const sessionId = typeof body.sessionId === 'string' ? body.sessionId : null;
+  const parsed = parseBody(emailSendBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  if (!to || !subject || !emailBody) {
-    return Response.json({ error: 'to, subject, and body are required' }, { status: 400 });
-  }
+  const { to, subject, body: emailBody, companyName, contactName, sessionId } = parsed.data;
 
   try {
     const { gmail, fromEmail } = await getGmailClient(user.id);
@@ -40,7 +34,7 @@ export async function POST(req: NextRequest) {
         contact_name: contactName,
         status: 'sent',
         gmail_message_id: messageId,
-        session_id: sessionId
+        session_id: sessionId ?? null
       })
       .select('id')
       .single();
@@ -53,7 +47,7 @@ export async function POST(req: NextRequest) {
           company_name: companyName,
           contact_email: to,
           contact_name: contactName,
-          session_id: sessionId,
+          session_id: sessionId ?? null,
           sent_email_id: sentEmail?.id ?? null
         },
         { onConflict: 'user_id,company_name,contact_email' }
@@ -74,7 +68,7 @@ export async function POST(req: NextRequest) {
       contact_name: contactName,
       status: 'failed',
       error_message: errorMessage,
-      session_id: sessionId
+      session_id: sessionId ?? null
     });
 
     return Response.json({ error: errorMessage }, { status: 500 });

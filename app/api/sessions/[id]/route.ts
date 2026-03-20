@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sessionUpdateBodySchema, parseBody } from '@/lib/validation';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -37,25 +38,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body: Record<string, unknown> = await req.json();
-  const allowed = [
-    'name',
-    'step',
-    'transcript',
-    'icp',
-    'strategy_messages',
-    'candidates',
-    'selected_companies',
-    'results',
-    'people_results',
-    'email_sequences',
-    'status'
-  ];
+  const parsed = parseBody(sessionUpdateBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
-  for (const key of allowed) {
-    if (key in body) updates[key] = body[key];
-  }
+  const updates: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+    ...parsed.data
+  };
 
   const { error } = await supabase
     .from('research_sessions')

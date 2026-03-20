@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createIcpBodySchema, parseBody } from '@/lib/validation';
 
 export async function GET() {
   const supabase = await createClient();
@@ -34,13 +35,10 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body: Record<string, unknown> = await req.json();
-  const name = typeof body.name === 'string' ? body.name : '';
-  const icp = body.icp;
+  const parsed = parseBody(createIcpBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  if (!name || !icp) {
-    return Response.json({ error: 'name and icp are required' }, { status: 400 });
-  }
+  const { name, icp } = parsed.data;
 
   const { data, error } = await supabase
     .from('saved_icps')

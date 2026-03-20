@@ -3,29 +3,18 @@ import Anthropic from '@anthropic-ai/sdk';
 import { serviceConfig } from '@/lib/services/config';
 import { buildEmailGenerationPrompt } from '@/lib/prompts/email-generation';
 import { createClient } from '@/lib/supabase/server';
-import type {
-  CompanyResult,
-  TargetContact,
-  ICPCriteria,
-  GeneratedEmailSequence
-} from '@/lib/types';
-
-interface GenerateEmailRequest {
-  company?: CompanyResult;
-  contact?: TargetContact;
-  icp?: ICPCriteria;
-}
+import { emailGenerateBodySchema, parseBody } from '@/lib/validation';
+import type { GeneratedEmailSequence } from '@/lib/types';
 
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: 'ANTHROPIC_API_KEY is not set' }, { status: 500 });
   }
 
-  const { company, contact, icp }: GenerateEmailRequest = await req.json();
+  const parsed = parseBody(emailGenerateBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  if (!company || !contact || !icp) {
-    return Response.json({ error: 'company, contact, and icp are required' }, { status: 400 });
-  }
+  const { company, contact, icp } = parsed.data;
 
   try {
     const supabase = await createClient();

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { signatureCreateBodySchema, parseBody } from '@/lib/validation';
 
 export async function GET() {
   const supabase = await createClient();
@@ -34,13 +35,10 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body: Record<string, unknown> = await req.json();
-  const name = typeof body.name === 'string' ? body.name : '';
-  const signatureBody = typeof body.body === 'string' ? body.body : '';
+  const parsed = parseBody(signatureCreateBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  if (!name || !signatureBody) {
-    return Response.json({ error: 'name and body are required' }, { status: 400 });
-  }
+  const { name, body: signatureBody } = parsed.data;
 
   const { data, error } = await supabase
     .from('email_signatures')

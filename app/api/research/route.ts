@@ -1,29 +1,15 @@
 import { NextRequest } from 'next/server';
 import { discoverCompanies, researchConfirmedCompanies } from '@/lib/services/pipeline';
-import type { ResearchStreamEvent, ICPCriteria, DiscoveredCompanyPreview } from '@/lib/types';
+import { researchBodySchema, parseBody } from '@/lib/validation';
+import type { ResearchStreamEvent } from '@/lib/types';
 
 export const maxDuration = 300;
 
-function isICPCriteria(value: unknown): value is ICPCriteria {
-  if (typeof value !== 'object' || value === null) return false;
-  const obj = value as Record<string, unknown>;
-  return typeof obj.description === 'string' && Array.isArray(obj.industry_keywords);
-}
-
 export async function POST(req: NextRequest) {
-  const body: Record<string, unknown> = await req.json();
+  const parsed = parseBody(researchBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  // Phase 1: discover — send { icp } → get candidates back
-  // Phase 2: research — send { icp, companies: [...], candidates: [...] } → get results back
-  const icp = isICPCriteria(body.icp) ? body.icp : undefined;
-  const companies = Array.isArray(body.companies) ? (body.companies as string[]) : undefined;
-  const candidates = Array.isArray(body.candidates)
-    ? (body.candidates as DiscoveredCompanyPreview[])
-    : undefined;
-
-  if (!icp) {
-    return Response.json({ error: 'ICP is required' }, { status: 400 });
-  }
+  const { icp, companies, candidates } = parsed.data;
 
   const missing: string[] = [];
   if (!process.env.ANTHROPIC_API_KEY) missing.push('ANTHROPIC_API_KEY');

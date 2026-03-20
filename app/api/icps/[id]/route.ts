@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { updateIcpBodySchema, parseBody } from '@/lib/validation';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,10 +13,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body: Record<string, unknown> = await req.json();
+  const parsed = parseBody(updateIcpBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
+
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
-  if (typeof body.name === 'string') updates.name = body.name;
-  if (body.icp) updates.icp = body.icp;
+  if (parsed.data.name !== undefined) updates.name = parsed.data.name;
+  if (parsed.data.icp !== undefined) updates.icp = parsed.data.icp;
 
   const { data, error } = await supabase
     .from('saved_icps')

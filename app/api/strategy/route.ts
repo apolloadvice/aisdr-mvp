@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { serviceConfig } from '@/lib/services/config';
 import { buildStrategyPrompt, buildStrategyRevisionPrompt } from '@/lib/prompts/strategy';
-import type { ICPCriteria, StrategyMessage } from '@/lib/types';
+import { strategyBodySchema, parseBody } from '@/lib/validation';
 
 function getContentBlockType(event: Anthropic.MessageStreamEvent): string | null {
   if (
@@ -18,16 +18,10 @@ function getContentBlockType(event: Anthropic.MessageStreamEvent): string | null
 }
 
 export async function POST(req: NextRequest) {
-  const body = (await req.json()) as {
-    icp?: ICPCriteria;
-    messages?: StrategyMessage[];
-  };
+  const parsed = parseBody(strategyBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  const { icp, messages } = body;
-
-  if (!icp) {
-    return Response.json({ error: 'ICP is required' }, { status: 400 });
-  }
+  const { icp, messages } = parsed.data;
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: 'ANTHROPIC_API_KEY is not set' }, { status: 500 });

@@ -1,13 +1,12 @@
 import { NextRequest } from 'next/server';
 import { claudeICPParser } from '@/lib/services/ai';
+import { parseIcpBodySchema, parseBody } from '@/lib/validation';
 
 export async function POST(req: NextRequest) {
-  const body: Record<string, unknown> = await req.json();
-  const input = typeof body.input === 'string' ? body.input : undefined;
+  const parsed = parseBody(parseIcpBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  if (!input?.trim()) {
-    return Response.json({ error: 'Input is required' }, { status: 400 });
-  }
+  const { input } = parsed.data;
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: 'ANTHROPIC_API_KEY is not set' }, { status: 500 });

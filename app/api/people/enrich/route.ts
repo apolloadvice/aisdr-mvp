@@ -1,14 +1,12 @@
 import { NextRequest } from 'next/server';
 import { apolloPersonEnrich } from '@/lib/services/apollo-people';
+import { peopleEnrichBodySchema, parseBody } from '@/lib/validation';
 
 export async function POST(req: NextRequest) {
-  const body: Record<string, unknown> = await req.json();
+  const parsed = parseBody(peopleEnrichBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
 
-  const personId = typeof body.person_id === 'string' ? body.person_id : undefined;
-
-  if (!personId) {
-    return Response.json({ error: 'person_id is required' }, { status: 400 });
-  }
+  const { person_id: personId } = parsed.data;
 
   if (!process.env.APOLLO_API_KEY) {
     return Response.json({ error: 'APOLLO_API_KEY is not set' }, { status: 500 });

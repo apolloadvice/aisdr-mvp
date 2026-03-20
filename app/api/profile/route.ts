@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { profileUpdateBodySchema, parseBody } from '@/lib/validation';
 
 export async function GET() {
   const supabase = await createClient();
@@ -30,8 +31,10 @@ export async function PUT(req: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body: Record<string, unknown> = await req.json();
-  const fullName = typeof body.full_name === 'string' ? body.full_name.trim() : '';
+  const parsed = parseBody(profileUpdateBodySchema, await req.json());
+  if (!parsed.success) return parsed.response;
+
+  const fullName = parsed.data.full_name.trim();
 
   const { error } = await supabase.from('user_profiles').upsert(
     { user_id: user.id, full_name: fullName, updated_at: new Date().toISOString() },
