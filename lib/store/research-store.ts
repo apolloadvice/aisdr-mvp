@@ -495,7 +495,7 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
           enrichingPersonIds: state.enrichingPersonIds.filter((id) => id !== personId)
         };
       });
-      toast.success('Contact unlocked — 1 credit used');
+      toast.success('Contact unlocked');
       get().saveSession();
     } catch (err) {
       console.error('Person enrichment failed:', err);

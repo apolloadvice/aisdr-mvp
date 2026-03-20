@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Mail } from 'lucide-react';
 import { ContactList } from './contact-list.client';
 import { EmailEditorInline } from './email-editor-inline.client';
 import { useResearchStore } from '@/lib/store/research-store';
@@ -31,18 +30,12 @@ export function ContactScreen({
 
   return (
     <div className="border-border bg-card overflow-hidden rounded-[var(--card-radius)] border">
-      {onNextCompany && nextCompanyName && (
-        <div className="border-border flex items-center justify-end border-b px-4 py-2">
-          <Button variant="ghost" size="sm" onClick={onNextCompany}>
-            Next: {nextCompanyName}
-            <ChevronRight className="size-3.5" />
-          </Button>
-        </div>
-      )}
       <div className="flex" style={{ height: 'calc(100dvh - 300px)', minHeight: '500px' }}>
         {/* Left panel — Contact list (30%) */}
         <div className="border-border w-full shrink-0 overflow-hidden border-r md:w-[30%]">
           <ContactList
+            nextCompanyName={nextCompanyName}
+            onNextCompany={onNextCompany}
             companyName={companyName}
             apolloOrgId={apolloOrgId}
             result={result}
@@ -60,7 +53,6 @@ export function ContactScreen({
             <EmailEditorInline
               key={composeParams.contact.email ?? composeParams.contact.name}
               params={composeParams}
-              onBack={() => setComposeParams(null)}
             />
           ) : (
             <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-3">
@@ -76,7 +68,6 @@ export function ContactScreen({
             <EmailEditorInline
               key={`mobile-${composeParams.contact.email ?? composeParams.contact.name}`}
               params={composeParams}
-              onBack={() => setComposeParams(null)}
             />
           </div>
         )}

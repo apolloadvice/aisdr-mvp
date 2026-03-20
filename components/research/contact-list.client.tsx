@@ -1,7 +1,16 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Users, Mail, Loader2, Linkedin, Search, Crown, PenSquare } from 'lucide-react';
+import {
+  Users,
+  Mail,
+  Loader2,
+  Linkedin,
+  Search,
+  Crown,
+  PenSquare,
+  ChevronRight
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CopyButton } from './copy-button.client';
@@ -113,22 +122,21 @@ function PersonCard({
 
       <div className="flex shrink-0 items-center gap-1.5">
         {person.is_enriched && person.email && onCompose ? (
-          <Button variant="outline" size="xs" onClick={onCompose}>
+          <Button variant="outline" size="icon-xs" label="Compose email" onClick={onCompose}>
             <PenSquare className="size-3" />
-            Compose
           </Button>
         ) : !person.is_enriched ? (
-          <Button variant="outline" size="xs" onClick={onEnrich} disabled={isEnriching}>
+          <Button
+            variant="outline"
+            size="icon-xs"
+            label="Get contact info"
+            onClick={onEnrich}
+            disabled={isEnriching}
+          >
             {isEnriching ? (
-              <>
-                <Loader2 className="size-3 animate-spin" />
-                Loading...
-              </>
+              <Loader2 className="size-3 animate-spin" />
             ) : (
-              <>
-                <Users className="size-3" />
-                Get Contact
-              </>
+              <Users className="size-3" />
             )}
           </Button>
         ) : null}
@@ -145,7 +153,9 @@ export function ContactList({
   enrichingPersonIds,
   onEnrichPerson,
   onSelectContact,
-  contactedEmails
+  contactedEmails,
+  nextCompanyName,
+  onNextCompany
 }: {
   companyName: string;
   apolloOrgId: string;
@@ -155,6 +165,8 @@ export function ContactList({
   onEnrichPerson: (personId: string, companyName: string) => void;
   onSelectContact: (params: ComposeEmailParams) => void;
   contactedEmails: string[];
+  nextCompanyName?: string;
+  onNextCompany?: () => void;
 }) {
   const [search, setSearch] = useState('');
   const [people, setPeople] = useState<ApolloPersonPreview[]>([]);
@@ -246,9 +258,22 @@ export function ContactList({
   return (
     <div className="flex h-full flex-col">
       <div className="border-border shrink-0 border-b px-4 py-3">
-        <p className="text-muted-foreground mb-2 text-xs">
-          {loading ? 'Loading contacts...' : `${totalCount} people found`}
-        </p>
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-muted-foreground text-xs">
+            {loading ? 'Loading contacts...' : `${totalCount} people found`}
+          </p>
+          {onNextCompany && nextCompanyName && (
+            <Button
+              variant="default"
+              size="xs"
+              label={`View ${nextCompanyName} contacts`}
+              onClick={onNextCompany}
+            >
+              {nextCompanyName}
+              <ChevronRight className="size-3" />
+            </Button>
+          )}
+        </div>
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input

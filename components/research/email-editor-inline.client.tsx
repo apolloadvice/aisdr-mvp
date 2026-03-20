@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, RefreshCw, Loader2, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   AlertDialog,
@@ -92,11 +92,14 @@ function EmailPreview({
 
 export function EmailEditorInline({
   params,
-  onBack
+  onSent
 }: {
   params: ComposeEmailParams;
-  onBack: () => void;
+  onSent?: () => void;
 }) {
+  const { company, contact } = params;
+  const contactKey = contact.email ?? contact.name;
+
   const [toEmail, setToEmail] = useState('');
   const [steps, setSteps] = useState<EmailTriple | null>(null);
   const [activeStep, setActiveStep] = useState(0);
@@ -114,9 +117,7 @@ export function EmailEditorInline({
   const loadSignatures = useSignatureStore((s) => s.loadSignatures);
   const selectedSignature = signatures.find((s) => s.id === selectedSignatureId) ?? null;
 
-  const contactKey = params.contact.email ?? params.contact.name;
-  const { company, contact } = params;
-
+  // Load Gmail status + signatures on mount
   useEffect(() => {
     getGmailStatus().then((s) => {
       setGmailConnected(s.connected);
@@ -128,50 +129,44 @@ export function EmailEditorInline({
     });
   }, [loadSignatures]);
 
-  const loadStep = useCallback((i: number, emails: EmailTriple | null) => {
-    if (!emails) return;
+  // Restore cached sequence on mount
+  useEffect(() => {
+    setToEmail(contact.email ?? '');
+    const cached = useResearchStore.getState().getEmailSequence(company.company_name, contactKey);
+    if (cached) {
+      setSteps(cached.emails);
+      setSubject(cached.emails[0].subject);
+      setBody(cached.emails[0].body);
+      setActiveStep(0);
+    }
+  }, [company.company_name, contact.email, contactKey]);
+
+  const loadStep = (i: number, emails: EmailTriple) => {
     setSubject(emails[i].subject);
     setBody(emails[i].body);
     setActiveStep(i);
-  }, []);
+  };
 
-  useEffect(() => {
-    setToEmail(contact.email ?? '');
-    setActiveStep(0);
-
-    const cached = useResearchStore.getState().getEmailSequence(company.company_name, contactKey);
-
-    if (cached) {
-      setSteps(cached.emails);
-      loadStep(0, cached.emails);
-      return;
-    }
-
-    setSteps(null);
-    const controller = new AbortController();
+  const handleGenerate = async () => {
     setGenerating(true);
-    generateEmailSequence(company, contact, params.icp, controller.signal)
-      .then((seq) => {
-        setSteps(seq.emails);
-        loadStep(0, seq.emails);
-        useResearchStore.getState().saveEmailSequence(company.company_name, contactKey, seq);
-      })
-      .catch((err) => {
-        if (err.name !== 'AbortError') {
-          const title = company.signals[0]?.title ?? 'Introduction';
-          const fallback: EmailTriple = [
-            { subject: `${title} — ${company.company_name}`, body: '' },
-            { subject: `Re: ${title} — ${company.company_name}`, body: '' },
-            { subject: `Re: ${title} — ${company.company_name}`, body: '' }
-          ];
-          setSteps(fallback);
-          loadStep(0, fallback);
-        }
-      })
-      .finally(() => setGenerating(false));
-
-    return () => controller.abort();
-  }, [params, loadStep, contactKey, company, contact]);
+    try {
+      const seq = await generateEmailSequence(company, contact, params.icp);
+      setSteps(seq.emails);
+      loadStep(activeStep, seq.emails);
+      useResearchStore.getState().saveEmailSequence(company.company_name, contactKey, seq);
+    } catch {
+      const title = company.signals[0]?.title ?? 'Introduction';
+      const fallback: EmailTriple = [
+        { subject: `${title} — ${company.company_name}`, body: '' },
+        { subject: `Re: ${title} — ${company.company_name}`, body: '' },
+        { subject: `Re: ${title} — ${company.company_name}`, body: '' }
+      ];
+      setSteps(fallback);
+      loadStep(0, fallback);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const handleStepChange = (newStep: number) => {
     setSteps((prev) => {
@@ -183,20 +178,6 @@ export function EmailEditorInline({
       setActiveStep(newStep);
       return updated;
     });
-  };
-
-  const handleRegenerate = async () => {
-    setGenerating(true);
-    try {
-      const seq = await generateEmailSequence(company, contact, params.icp);
-      setSteps(seq.emails);
-      loadStep(activeStep, seq.emails);
-      useResearchStore.getState().saveEmailSequence(company.company_name, contactKey, seq);
-    } catch {
-      // keep current content
-    } finally {
-      setGenerating(false);
-    }
   };
 
   const handleSend = async () => {
@@ -215,6 +196,7 @@ export function EmailEditorInline({
       });
       if (result.success) {
         toast.success('Email sent successfully');
+        onSent?.();
       } else {
         toast.error(result.error ?? 'Send failed');
       }
@@ -225,45 +207,32 @@ export function EmailEditorInline({
     }
   };
 
-  const handleBack = () => {
-    if (steps) {
-      const updated = [...steps] as EmailTriple;
-      updated[activeStep] = { subject, body };
-      useResearchStore
-        .getState()
-        .saveEmailSequence(company.company_name, contactKey, { emails: updated });
-    }
-    onBack();
-  };
-
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="border-border shrink-0 border-b px-4 py-3">
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm font-medium">{company.company_name}</p>
-            <p className="text-muted-foreground text-xs">
-              {contact.name} &middot; {contact.title}
-            </p>
-          </div>
-          <div className="flex items-center gap-1">
-            {STEP_LABELS.map((label, i) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => handleStepChange(i)}
-                disabled={generating}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                  activeStep === i
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+      <div className="border-border shrink-0 space-y-2 border-b px-4 py-3 pr-12">
+        <div>
+          <p className="text-sm font-medium">{company.company_name}</p>
+          <p className="text-muted-foreground text-xs">
+            {contact.name} &middot; {contact.title}
+          </p>
+        </div>
+        <div className="flex items-center gap-1">
+          {STEP_LABELS.map((label, i) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => handleStepChange(i)}
+              disabled={generating}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                activeStep === i
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -324,11 +293,7 @@ export function EmailEditorInline({
           </div>
 
           {/* Footer */}
-          <div className="border-border flex flex-wrap items-center gap-2 border-t px-4 py-3">
-            <Button variant="ghost" size="sm" onClick={handleBack}>
-              <ChevronLeft className="size-3.5" />
-              Contacts
-            </Button>
+          <div className="border-border flex items-center gap-2 border-t px-4 py-3">
             <Button
               variant="outline"
               size="sm"
@@ -337,13 +302,18 @@ export function EmailEditorInline({
             >
               Preview
             </Button>
-            <Button variant="outline" size="sm" onClick={handleRegenerate} disabled={generating}>
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={handleGenerate}
+              disabled={generating}
+              label={generating ? 'Generating...' : steps ? 'Regenerate' : 'Generate'}
+            >
               {generating ? (
                 <Loader2 className="size-3.5 animate-spin" />
               ) : (
                 <RefreshCw className="size-3.5" />
               )}
-              {generating ? 'Generating...' : 'Regenerate'}
             </Button>
             <div className="ml-auto flex items-center gap-2">
               <div className="flex items-center gap-1">
@@ -378,17 +348,16 @@ export function EmailEditorInline({
                 </button>
               )}
               <Button
-                size="sm"
+                size="icon-sm"
                 onClick={() => setConfirmOpen(true)}
                 disabled={!gmailConnected || !toEmail || generating || sending}
-                title={!gmailConnected ? 'Connect Gmail in Settings to send' : undefined}
+                label={!gmailConnected ? 'Connect Gmail to send' : 'Send email'}
               >
                 {sending ? (
                   <Loader2 className="size-3.5 animate-spin" />
                 ) : (
                   <Send className="size-3.5" />
                 )}
-                {sending ? 'Sending...' : 'Send'}
               </Button>
 
               <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
