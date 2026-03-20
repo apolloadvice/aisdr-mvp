@@ -3,6 +3,14 @@
 import { useState, useMemo, useCallback } from 'react';
 import { ChevronDown, Pencil, LayoutGrid, Users, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CompanyRow, GRID_COLS } from './company-card';
 import { ContactScreen } from './contact-screen.client';
@@ -44,6 +52,7 @@ function FilterSortBar({
 }) {
   return (
     <div className="mb-3 flex flex-wrap items-center gap-2">
+      <Label className="text-muted-foreground text-xs">Filter</Label>
       <div className="flex flex-wrap gap-1.5">
         {SIGNAL_TYPES.map((type) => (
           <button
@@ -59,19 +68,24 @@ function FilterSortBar({
           </button>
         ))}
       </div>
-      <div className="ml-auto">
-        <select
+      <div className="ml-auto flex items-center gap-1.5">
+        <Label className="text-muted-foreground text-xs">Sort</Label>
+        <Select
           value={sort}
-          onChange={(e) => {
-            if (isSortOption(e.target.value)) onSortChange(e.target.value);
+          onValueChange={(v) => {
+            if (isSortOption(v)) onSortChange(v);
           }}
-          className="bg-muted text-foreground rounded-md border-none px-2.5 py-1 text-xs"
         >
-          <option value="signals">Signal Count</option>
-          <option value="funding">Funding Stage</option>
-          <option value="name">Company Name (A-Z)</option>
-          <option value="contacted">Contacted First</option>
-        </select>
+          <SelectTrigger className="h-7 w-auto gap-1.5 border-none px-2.5 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="signals">Signal Count</SelectItem>
+            <SelectItem value="funding">Funding Stage</SelectItem>
+            <SelectItem value="name">Company Name (A-Z)</SelectItem>
+            <SelectItem value="contacted">Contacted First</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
@@ -225,10 +239,7 @@ export function ResultsStep() {
   const setStep = useResearchStore((s) => s.setStep);
   const candidates = useResearchStore((s) => s.candidates);
   const selectedCompanies = useResearchStore((s) => s.selectedCompanies);
-  const peopleResults = useResearchStore((s) => s.peopleResults);
-  const isPeopleSearching = useResearchStore((s) => s.isPeopleSearching);
-  const enrichingPersonIds = useResearchStore((s) => s.enrichingPersonIds);
-  const enrichPersonAction = useResearchStore((s) => s.enrichPersonAction);
+
   const getContactedEmails = useResearchStore((s) => s.getContactedEmails);
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set(SIGNAL_TYPES));
   const [sort, setSort] = useState<SortOption>('signals');
@@ -323,7 +334,7 @@ export function ResultsStep() {
       {icp && <ICPSummary icp={icp} onEditCriteria={() => setStep('review')} />}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-4 w-full justify-start overflow-x-auto">
+        <TabsList className="mb-4 w-full justify-start">
           <TabsTrigger value="research">
             <LayoutGrid className="size-3" />
             Research
@@ -397,16 +408,14 @@ export function ResultsStep() {
 
               <div className="border-border bg-card overflow-x-auto rounded-(--card-radius) border lg:overflow-x-auto">
                 <div className={`bg-muted/50 border-border hidden ${GRID_COLS} border-b lg:grid`}>
-                  {['Company', 'Target Person', 'Buying Signal', 'Overview & Fit'].map(
-                    (label, i, arr) => (
-                      <div
-                        key={label}
-                        className={`text-muted-foreground section-label min-w-0 px-4 py-2.5 ${i < arr.length - 1 ? 'border-border border-r' : ''}`}
-                      >
-                        {label}
-                      </div>
-                    )
-                  )}
+                  {['Company', 'Buying Signal', 'Overview & Fit'].map((label, i, arr) => (
+                    <div
+                      key={label}
+                      className={`text-muted-foreground section-label min-w-0 px-4 py-2.5 ${i < arr.length - 1 ? 'border-border border-r' : ''}`}
+                    >
+                      {label}
+                    </div>
+                  ))}
                 </div>
 
                 {displayCompanies.map((candidate) => {
@@ -429,10 +438,6 @@ export function ResultsStep() {
                       result={result}
                       status={status}
                       onViewContacts={openCompanyTab}
-                      people={peopleResults[candidate.name]}
-                      isPeopleSearching={isPeopleSearching}
-                      onEnrichPerson={enrichPersonAction}
-                      enrichingPersonIds={enrichingPersonIds}
                       contactedEmails={getContactedEmails(candidate.name)}
                     />
                   );

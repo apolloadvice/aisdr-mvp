@@ -38,6 +38,7 @@ export function ContactScreen({
             onEnrichPerson={enrichPersonAction}
             onSelectContact={setComposeParams}
             contactedEmails={getContactedEmails(companyName)}
+            selectedEmail={composeParams?.contact.email ?? null}
           />
         </div>
 
@@ -47,7 +48,6 @@ export function ContactScreen({
             <EmailEditorInline
               key={composeParams.contact.email ?? composeParams.contact.name}
               params={composeParams}
-              onBack={() => setComposeParams(null)}
             />
           ) : (
             <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-3">
@@ -63,7 +63,6 @@ export function ContactScreen({
             <EmailEditorInline
               key={`mobile-${composeParams.contact.email ?? composeParams.contact.name}`}
               params={composeParams}
-              onBack={() => setComposeParams(null)}
             />
           </div>
         )}

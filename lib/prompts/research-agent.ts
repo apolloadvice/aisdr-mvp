@@ -18,7 +18,7 @@ You have 2 web searches:
 2. "${companyName} jobs hiring ${icp.hiring_signals[0] || 'engineering'} news"
 
 Return ONLY JSON:
-{"website":"domain (no https://)","linkedin_url":"exact LinkedIn URL from results or null","signals":[{"type":"job_posting"|"news"|"funding"|"product_launch"|"other","title":"desc","key_phrases":["phrases"],"source_url":"real URL or null"}],"match_reason":"one sentence with a concrete fact","company_overview":"2-3 sentences","industry":"industry","funding_stage":"stage or Unknown","amount_raised":"e.g. $150M Series C or Unknown","inferred_contacts":[],"sources":{"jobs":[{"title":"t","url":"u"}],"funding":[{"title":"t","url":"u"}],"news":[{"title":"t","url":"u"}]}}
+{"website":"domain (no https://)","linkedin_url":"exact LinkedIn URL from results or null","signals":[{"type":"job_posting"|"news"|"funding"|"product_launch"|"other","title":"desc","key_phrases":["phrases"],"source_url":"real URL or null"}],"match_reason":"one sentence with a concrete fact","company_overview":"2-3 sentences","industry":"industry","funding_stage":"stage or Unknown","amount_raised":"e.g. $150M Series C or Unknown","sources":{"jobs":[{"title":"t","url":"u"}],"funding":[{"title":"t","url":"u"}],"news":[{"title":"t","url":"u"}]}}
 
-Only use URLs from search results. For linkedin_url use exact URL found — do NOT guess. Leave inferred_contacts empty.`;
+Only use URLs from search results. For linkedin_url use exact URL found — do NOT guess.`;
 }

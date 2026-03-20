@@ -243,7 +243,6 @@ export const claudeResearchAgent: CompanyResearcher = {
       industry: parsed.industry || 'Unknown',
       funding_stage: parsed.funding_stage || 'Unknown',
       amount_raised: parsed.amount_raised || 'Unknown',
-      inferred_contacts: parsed.inferred_contacts || [],
       sources
     };
   }

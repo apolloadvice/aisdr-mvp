@@ -21,7 +21,7 @@ export function SignalBadge({ type }: { type: string }) {
   const colors = SIGNAL_COLORS[type] || SIGNAL_COLORS.other;
   return (
     <span
-      className="font-medium"
+      className="font-medium whitespace-nowrap"
       style={{
         borderRadius: 'var(--tag-radius, 9999px)',
         paddingInline: 'var(--tag-padding-x, 0.5rem)',
