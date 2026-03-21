@@ -23,7 +23,7 @@ export function ConnectionsTab() {
   return (
     <div>
       <p className="text-muted-foreground mb-4 text-sm">
-        Connect your email to send outreach directly from Signal.
+        Connect your email to send outreach directly from Remes.
       </p>
 
       <div className="border-border flex items-center justify-between rounded-md border p-4">

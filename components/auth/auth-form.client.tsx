@@ -95,7 +95,7 @@ export function AuthForm({ defaultMode = Mode.SignIn }: AuthFormProps) {
     <div className="w-full max-w-sm space-y-6">
       <div className="text-center">
         <h1 className="text-foreground text-2xl font-bold tracking-tight">
-          {isSignUp ? 'Create your account' : 'Sign in to Signal'}
+          {isSignUp ? 'Create your account' : 'Sign in to Remes'}
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">
           {isSignUp
