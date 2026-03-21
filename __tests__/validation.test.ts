@@ -4,9 +4,11 @@ import {
   profileUpdateBodySchema,
   emailSendBodySchema,
   createIcpBodySchema,
-  sessionCreateBodySchema,
   parseIcpBodySchema
 } from '@/lib/validation';
+
+beforeEach(() => jest.spyOn(console, 'error').mockImplementation());
+afterEach(() => jest.restoreAllMocks());
 
 // ---------------------------------------------------------------------------
 // parseBody helper
@@ -59,7 +61,7 @@ describe('icpCriteriaSchema', () => {
   });
 
   it('defaults locations to empty array', () => {
-    const { locations, ...withoutLocations } = validIcp;
+    const { locations: _, ...withoutLocations } = validIcp;
     const result = icpCriteriaSchema.safeParse(withoutLocations);
     expect(result.success).toBe(true);
     if (result.success) {
