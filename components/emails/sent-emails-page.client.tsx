@@ -115,7 +115,7 @@ export function SentEmailsPage({ emails }: { emails: SentEmail[] }) {
       </div>
 
       {emails.length === 0 ? (
-        <div className="border-border rounded-lg border py-16 text-center">
+        <div className="border-border bg-card rounded-(--card-radius) border py-16 text-center">
           <div className="bg-muted/50 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
             <Mail className="text-muted-foreground size-5" />
           </div>

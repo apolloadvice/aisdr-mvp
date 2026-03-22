@@ -110,6 +110,7 @@ interface ResearchActions {
 
   // Step 4
   research: () => Promise<void>;
+  reResearchCompany: (companyName: string) => Promise<void>;
   searchPeopleAction: () => Promise<void>;
   enrichPersonAction: (personId: string, companyName: string) => Promise<void>;
 
@@ -423,6 +424,57 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
       if (sessionId) {
         updateSession(sessionId, { status: 'completed' }).catch(() => {});
       }
+      get().saveSession();
+    }
+  },
+
+  reResearchCompany: async (companyName: string) => {
+    const { icp, isResearching, candidates } = get();
+    if (!icp || isResearching) return;
+
+    // Remove old result for this company
+    set((state) => ({
+      results: state.results.filter((r) => r.company_name !== companyName),
+      isResearching: true,
+      statusMessage: '',
+      researchingCompany: null,
+      error: null
+    }));
+
+    const candidateData = candidates.filter((c) => c.name === companyName);
+
+    try {
+      await researchCompanies(
+        icp,
+        [companyName],
+        (event) => {
+          switch (event.type) {
+            case 'status': {
+              set({ statusMessage: event.message });
+              const match = event.message.match(/^Researching (.+?) \(/);
+              if (match) set({ researchingCompany: match[1] });
+              break;
+            }
+            case 'company':
+              set((state) => ({
+                results: [...state.results, event.data],
+                researchingCompany: null
+              }));
+              get().saveSession();
+              break;
+            case 'done':
+              set({ statusMessage: 'Re-research complete.', researchingCompany: null });
+              break;
+          }
+        },
+        undefined,
+        candidateData
+      );
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
+      set({ error: err instanceof Error ? err.message : 'Re-research failed' });
+    } finally {
+      set({ isResearching: false, researchingCompany: null });
       get().saveSession();
     }
   },

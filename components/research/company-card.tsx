@@ -9,7 +9,8 @@ import {
   Users,
   Mail,
   AtSign,
-  Loader2
+  Loader2,
+  RotateCw
 } from 'lucide-react';
 import { SignalBadge } from './signal-badge';
 import { CopyButton } from './copy-button.client';
@@ -88,7 +89,8 @@ function MobileCompanyCard({
   hasContacted,
   people,
   isPeopleSearching,
-  onViewContacts
+  onViewContacts,
+  onReResearch
 }: {
   preview: DiscoveredCompanyPreview;
   result: CompanyResult | null;
@@ -99,6 +101,7 @@ function MobileCompanyCard({
   people?: ApolloPersonPreview[];
   isPeopleSearching?: boolean;
   onViewContacts?: () => void;
+  onReResearch?: () => void;
 }) {
   const hasPeople = people && people.length > 0;
 
@@ -195,8 +198,14 @@ function MobileCompanyCard({
         </p>
       )}
 
-      {status === 'error' && (
-        <span className="text-destructive text-xs">Research failed for this company</span>
+      {(status === 'error' || status === 'pending') && onReResearch && (
+        <div className="flex items-center gap-2">
+          {status === 'error' && <span className="text-destructive text-xs">Research failed</span>}
+          <Button variant="outline" size="xs" onClick={onReResearch}>
+            <RotateCw className="size-3" />
+            Retry
+          </Button>
+        </div>
       )}
     </div>
   );
@@ -208,6 +217,7 @@ export function CompanyRow({
   result,
   status,
   onViewContacts,
+  onReResearch,
   people,
   isPeopleSearching,
   onEnrichPerson,
@@ -218,6 +228,7 @@ export function CompanyRow({
   result: CompanyResult | null;
   status: RowStatus;
   onViewContacts?: (info: ViewContactsInfo) => void;
+  onReResearch?: (companyName: string) => void;
   people?: ApolloPersonPreview[];
   isPeopleSearching?: boolean;
   onEnrichPerson?: (personId: string, companyName: string) => void;
@@ -229,6 +240,7 @@ export function CompanyRow({
   const isComplete = status === 'complete' && result !== null;
   const isResearching = status === 'researching';
   const hasContacted = contactedEmails && contactedEmails.length > 0;
+  const showRetry = !isComplete && !isResearching && onReResearch;
 
   const handleViewContacts = () => {
     if (!preview.apollo_org_id) return;
@@ -282,6 +294,7 @@ export function CompanyRow({
         people={people}
         isPeopleSearching={isPeopleSearching}
         onViewContacts={handleViewContacts}
+        onReResearch={onReResearch ? () => onReResearch(preview.name) : undefined}
       />
       {/* Desktop grid row */}
       <div className={`bg-card border-border hidden ${GRID_COLS} border-b last:border-b-0 lg:grid`}>
@@ -362,7 +375,7 @@ export function CompanyRow({
                     {preview.description}
                   </p>
                 )}
-                {!isComplete && (
+                {!isComplete && !showRetry && (
                   <div className="space-y-1">
                     <ShimmerBlock className="h-3 w-2/3" />
                     <ShimmerBlock className="h-3 w-1/2" />
@@ -379,10 +392,24 @@ export function CompanyRow({
               ))}
             </div>
           )}
+
+          {showRetry && (
+            <div className="flex items-center gap-2 pt-1">
+              {status === 'error' && (
+                <span className="text-destructive text-xs">Research failed</span>
+              )}
+              <Button size="xs" onClick={() => onReResearch(preview.name)}>
+                <RotateCw className="size-3" />
+                Retry Research
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="border-border min-w-0 border-r">
-          {isPeopleSearching ? (
+          {showRetry ? (
+            <div className="p-4" />
+          ) : isPeopleSearching ? (
             <PendingColumn isResearching={true} />
           ) : !preview.apollo_org_id && !hasPeople ? (
             <div className="flex items-center p-4">
@@ -471,7 +498,9 @@ export function CompanyRow({
         </div>
 
         <div className="border-border min-w-0 border-r">
-          {isComplete && result ? (
+          {showRetry ? (
+            <div className="p-4" />
+          ) : isComplete && result ? (
             <div className="space-y-3 p-4">
               <div className="space-y-2">
                 {result.signals.slice(0, 3).map((signal, i) => (
@@ -519,10 +548,8 @@ export function CompanyRow({
             <div className="space-y-3 p-4">
               <p className="text-xs leading-relaxed">{result.company_overview}</p>
             </div>
-          ) : status === 'error' ? (
-            <div className="flex items-center gap-2 p-4">
-              <span className="text-destructive text-xs">Research failed for this company</span>
-            </div>
+          ) : showRetry ? (
+            <div className="p-4" />
           ) : (
             <PendingColumn isResearching={isResearching} />
           )}

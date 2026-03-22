@@ -232,6 +232,7 @@ export function ResultsStep() {
   const isPeopleSearching = useResearchStore((s) => s.isPeopleSearching);
   const enrichingPersonIds = useResearchStore((s) => s.enrichingPersonIds);
   const enrichPersonAction = useResearchStore((s) => s.enrichPersonAction);
+  const reResearchCompany = useResearchStore((s) => s.reResearchCompany);
   const getContactedEmails = useResearchStore((s) => s.getContactedEmails);
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set(SIGNAL_TYPES));
   const [sort, setSort] = useState<SortOption>('signals');
@@ -432,6 +433,7 @@ export function ResultsStep() {
                       result={result}
                       status={status}
                       onViewContacts={openCompanyTab}
+                      onReResearch={!isResearching ? reResearchCompany : undefined}
                       people={peopleResults[candidate.name]}
                       isPeopleSearching={isPeopleSearching}
                       onEnrichPerson={enrichPersonAction}
