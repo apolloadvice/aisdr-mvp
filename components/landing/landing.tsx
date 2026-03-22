@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Radar, Users, Send, Play } from 'lucide-react';
+import { ArrowRight, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
@@ -11,30 +11,6 @@ import {
 } from '@/components/ui/accordion';
 import { useAuthStore } from '@/lib/store/auth-store';
 import { MAX_WIDTH } from '@/lib/layout';
-
-const STEPS = [
-  {
-    num: '01',
-    icon: Radar,
-    title: 'Detect signals',
-    desc: 'Job postings, funding rounds, hiring surges — captured in real time.',
-    gradient: 'linear-gradient(135deg, #6366f1, #7c3aed)'
-  },
-  {
-    num: '02',
-    icon: Users,
-    title: 'Find decision makers',
-    desc: 'The right person with verified contact info, ready to go.',
-    gradient: 'linear-gradient(135deg, #7c3aed, #a855f7)'
-  },
-  {
-    num: '03',
-    icon: Send,
-    title: 'Draft outreach',
-    desc: 'Personalized emails rooted in the exact signal detected.',
-    gradient: 'linear-gradient(135deg, #a855f7, #d946ef)'
-  }
-];
 
 const SHOWCASE = [
   {
@@ -196,56 +172,8 @@ export function Landing() {
       </section>
 
       <div className={`relative mx-auto flex w-full ${MAX_WIDTH} flex-col px-6`}>
-        {/* ── How it works ── */}
-        <section
-          className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both py-10 duration-700 sm:py-14"
-          style={{ animationDelay: '500ms' }}
-        >
-          <div className="mb-8 flex items-end justify-between sm:mb-10">
-            <div>
-              <span className="section-label text-muted-foreground">How it works</span>
-              <h2 className="text-foreground mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-                Three steps to pipeline
-              </h2>
-            </div>
-            <Button variant="ghost" size="sm" className="gap-1.5" onClick={handleGetStarted}>
-              Start for free
-              <ArrowRight className="size-3.5" />
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-            {STEPS.map((step) => (
-              <div
-                key={step.title}
-                className="bg-card group rounded-xl border p-6 transition-all duration-300 hover:-translate-y-0.5"
-                style={{ boxShadow: 'var(--card-shadow, none)' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    'var(--card-hover-shadow, var(--shadow-md, 0 4px 12px rgba(0,0,0,.08)))';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = 'var(--card-shadow, none)';
-                }}
-              >
-                <div className="mb-4 flex items-start justify-between">
-                  <div
-                    className="flex size-11 items-center justify-center rounded-lg shadow-sm"
-                    style={{ background: step.gradient }}
-                  >
-                    <step.icon className="size-5 text-white" />
-                  </div>
-                  <span className="text-muted-foreground/40 text-2xl font-bold">{step.num}</span>
-                </div>
-                <h3 className="text-foreground text-base font-semibold">{step.title}</h3>
-                <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* ── Showcase ── */}
-        <section id="use-cases" className="border-border scroll-mt-16 border-t py-10 sm:py-14">
+        <section id="use-cases" className="scroll-mt-16 py-10 sm:py-14">
           <div className="mb-10 sm:mb-14">
             <span className="section-label text-muted-foreground">See it in action</span>
             <h2 className="text-foreground mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
