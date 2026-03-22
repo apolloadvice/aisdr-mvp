@@ -1,14 +1,11 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/server';
 import { ResearchDashboard } from '@/components/research/research-dashboard.client';
 import type { ResearchSession } from '@/lib/types';
 
 export default async function ResearchSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) notFound();
 

@@ -1,12 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/server';
 import { ResearchHub } from '@/components/research/research-hub.client';
 import type { SavedICP } from '@/lib/types';
 
 export default async function Research() {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) return <ResearchHub sessions={[]} icps={[]} />;
 
