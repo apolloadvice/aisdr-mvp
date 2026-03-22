@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { CheckCircle, XCircle, Mail, ExternalLink } from 'lucide-react';
+import { CheckCircle, XCircle, Mail, ExternalLink, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
@@ -115,9 +116,19 @@ export function SentEmailsPage({ emails }: { emails: SentEmail[] }) {
 
       {emails.length === 0 ? (
         <div className="border-border rounded-lg border py-16 text-center">
-          <p className="text-muted-foreground text-sm">
-            Compose an email from a researched company to get started.
+          <div className="bg-muted/50 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
+            <Mail className="text-muted-foreground size-5" />
+          </div>
+          <h3 className="text-foreground mb-1 text-sm font-medium">No emails sent yet</h3>
+          <p className="text-muted-foreground mx-auto mb-5 max-w-xs text-sm">
+            Research companies first, then compose personalized outreach from your results.
           </p>
+          <Button asChild size="sm">
+            <Link href="/research">
+              <Search className="size-3.5" />
+              Start Researching
+            </Link>
+          </Button>
         </div>
       ) : (
         <div className="flex gap-4">
