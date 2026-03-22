@@ -136,7 +136,10 @@ export function EmailEditorInline({
       setSubject(cached.emails[0].subject);
       setBody(cached.emails[0].body);
       setActiveStep(0);
+    } else {
+      handleGenerate();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [company.company_name, contact.email, contactKey]);
 
   const loadStep = (i: number, emails: EmailTriple) => {
@@ -257,7 +260,7 @@ export function EmailEditorInline({
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 disabled={generating}
-                placeholder={generating ? 'Generating...' : ''}
+                placeholder={generating ? 'Generating personalized email...' : ''}
               />
             </div>
 
