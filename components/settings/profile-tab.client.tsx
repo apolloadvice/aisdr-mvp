@@ -9,8 +9,10 @@ import { toast } from 'sonner';
 
 export function ProfileTab() {
   const fullName = useProfileStore((s) => s.fullName);
+  const companyName = useProfileStore((s) => s.companyName);
   const profileLoaded = useProfileStore((s) => s.profileLoaded);
   const setFullName = useProfileStore((s) => s.setFullName);
+  const setCompanyName = useProfileStore((s) => s.setCompanyName);
   const loadProfile = useProfileStore((s) => s.loadProfile);
   const [saving, setSaving] = useState(false);
 
@@ -24,7 +26,7 @@ export function ProfileTab() {
       const res = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name: fullName })
+        body: JSON.stringify({ full_name: fullName, company_name: companyName })
       });
       if (!res.ok) throw new Error();
       toast.success('Profile saved');
@@ -43,6 +45,15 @@ export function ProfileTab() {
           value={fullName ?? ''}
           onChange={(e) => setFullName(e.target.value)}
           placeholder={!profileLoaded ? 'Loading...' : 'Your name'}
+          disabled={!profileLoaded}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <label className="text-muted-foreground text-xs font-medium">Company Name</label>
+        <Input
+          value={companyName ?? ''}
+          onChange={(e) => setCompanyName(e.target.value)}
+          placeholder={!profileLoaded ? 'Loading...' : 'Your company'}
           disabled={!profileLoaded}
         />
       </div>

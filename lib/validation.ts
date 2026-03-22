@@ -241,7 +241,8 @@ export const signatureUpdateBodySchema = z.object({
 });
 
 export const profileUpdateBodySchema = z.object({
-  full_name: shortStr
+  full_name: shortStr,
+  company_name: shortStr.optional()
 });
 
 export const peopleSearchBodySchema = z.object({

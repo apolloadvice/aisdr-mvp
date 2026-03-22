@@ -4,7 +4,8 @@ export function buildEmailGenerationPrompt(
   company: CompanyResult,
   contact: TargetContact,
   icp: ICPCriteria,
-  senderFirstName?: string
+  senderFirstName?: string,
+  senderCompany?: string
 ): string {
   const signals = company.signals
     .slice(0, 3)
@@ -12,11 +13,13 @@ export function buildEmailGenerationPrompt(
     .join('\n');
   const prospectFirst = contact.name.split(' ')[0];
   const sender = senderFirstName ?? '[Your name]';
+  const senderCo = senderCompany ?? '[Your company]';
 
   return `You are an elite B2B cold email copywriter for an AI SDR platform. You generate 3-email sequences that feel like they were written by a sharp, helpful human — not a bot. Every email must sound like a real person typed it in 60 seconds between meetings.
 
 INPUTS
 {sender_name} = ${sender}
+{sender_company} = ${senderCo}
 {prospect_first_name} = ${prospectFirst}
 {prospect_company} = ${company.company_name}
 {prospect_title} = ${contact.title}
@@ -47,6 +50,8 @@ Structure & Formatting
 Strategy
 - Lead with THEIR world, not yours. The first sentence should always be about the prospect's situation, not your product.
 - The product should enter the email as a natural solution to something you observed — never as a pitch.
+- When referencing the sender's product or company, ALWAYS use {sender_company}. NEVER invent or guess a company name.
+- If {sender_company} is "[Your company]", do NOT mention any sender company or product name at all. Write the emails without referencing a specific product — focus on the prospect's problem and hint at a solution generically (e.g., "a tool we built" or "something that might help").
 - Only mention ONE proof point per email. Never list multiple case studies.
 - Each email in the sequence must use a DIFFERENT angle and a DIFFERENT proof point. Never repeat.
 - Never ask for a meeting directly (no "Can we hop on a call?" or "Do you have 15 minutes?"). Instead end with a low-friction question or a soft offer.

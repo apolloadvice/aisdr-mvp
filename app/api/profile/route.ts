@@ -12,7 +12,10 @@ export async function GET() {
 
   const { data } = await getProfile(supabase, user.id);
 
-  return Response.json({ full_name: data?.full_name ?? '' });
+  return Response.json({
+    full_name: data?.full_name ?? '',
+    company_name: data?.company_name ?? ''
+  });
 }
 
 export async function PUT(req: NextRequest) {
@@ -26,12 +29,13 @@ export async function PUT(req: NextRequest) {
   if (!parsed.success) return parsed.response;
 
   const fullName = parsed.data.full_name.trim();
+  const companyName = (parsed.data.company_name ?? '').trim();
 
-  const { error } = await upsertProfile(supabase, user.id, fullName);
+  const { error } = await upsertProfile(supabase, user.id, fullName, companyName);
 
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 
-  return Response.json({ full_name: fullName });
+  return Response.json({ full_name: fullName, company_name: companyName });
 }

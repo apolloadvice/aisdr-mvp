@@ -26,9 +26,16 @@ export async function POST(req: NextRequest) {
       profile?.full_name ||
       (typeof user.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : '');
     const senderFirstName = fullName.split(' ')[0] || undefined;
+    const senderCompany = profile?.company_name || undefined;
 
     const anthropic = new Anthropic();
-    const prompt = buildEmailGenerationPrompt(company, contact, icp, senderFirstName);
+    const prompt = buildEmailGenerationPrompt(
+      company,
+      contact,
+      icp,
+      senderFirstName,
+      senderCompany
+    );
 
     const message = await anthropic.messages.create({
       model: serviceConfig.emailModel,
