@@ -236,7 +236,7 @@ export function Landing() {
         {/* ── CTA ── */}
         <section className="border-border border-t py-14 text-center sm:py-20">
           <h2 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
-            Ready to fill your pipeline?
+            Stop missing buying signals
           </h2>
           <p className="text-muted-foreground mx-auto mt-3 max-w-md text-sm leading-relaxed sm:text-base">
             Start detecting signals and generating outreach in minutes. No credit card required.
