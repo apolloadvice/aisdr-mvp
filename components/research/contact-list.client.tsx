@@ -239,7 +239,12 @@ export function ContactList({
   }, [people, peopleResults, companyName]);
 
   const composeFor = (person: ApolloPersonPreview) => {
-    if (!result || !person.is_enriched || !person.email) return;
+    if (!person.is_enriched || !person.email) return;
+    const currentResult =
+      result ??
+      useResearchStore.getState().results.find((r) => r.company_name === companyName) ??
+      null;
+    if (!currentResult) return;
     const contact: TargetContact = {
       name: `${person.first_name} ${person.last_name}`,
       title: person.title ?? '',
@@ -247,7 +252,7 @@ export function ContactList({
       linkedin_url: person.linkedin_url ?? '',
       is_decision_maker: false
     };
-    onSelectContact({ company: result, contact, icp: icp ?? EMPTY_ICP });
+    onSelectContact({ company: currentResult, contact, icp: icp ?? EMPTY_ICP });
   };
 
   return (

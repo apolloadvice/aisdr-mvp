@@ -473,7 +473,7 @@ export function ResultsStep() {
               <ContactScreen
                 companyName={tab.name}
                 apolloOrgId={tab.apolloOrgId}
-                result={tab.result}
+                result={resultMap.get(tab.name) ?? tab.result}
                 onNextCompany={
                   nextCompany
                     ? () =>
