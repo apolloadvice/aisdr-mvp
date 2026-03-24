@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { Mail, Check, Square, CheckSquare } from 'lucide-react';
+import { Mail, Check, Square, CheckSquare, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmailEditorInline } from './email-editor-inline.client';
+import { BulkSendDialog } from './bulk-send-dialog.client';
 import { useResearchStore } from '@/lib/store/research-store';
 import type { CompanyResult, ComposeEmailParams, TargetContact, ICPCriteria } from '@/lib/types';
 
@@ -22,7 +23,7 @@ const EMPTY_ICP: ICPCriteria = {
   locations: []
 };
 
-interface ComposableContact {
+export interface ComposableContact {
   companyName: string;
   result: CompanyResult;
   contact: TargetContact;
@@ -37,6 +38,7 @@ export function OutreachStep() {
   const getContactedEmails = useResearchStore((s) => s.getContactedEmails);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [activeKey, setActiveKey] = useState<string | null>(null);
+  const [bulkSendOpen, setBulkSendOpen] = useState(false);
 
   const contacts = useMemo(() => {
     const list: ComposableContact[] = [];
@@ -136,31 +138,42 @@ export function OutreachStep() {
     <div className="flex flex-col gap-4 md:flex-row" style={{ minHeight: 'min(600px, 70vh)' }}>
       {/* Contact sidebar */}
       <div className="border-border bg-card w-full shrink-0 overflow-y-auto rounded-(--card-radius) border md:w-72 lg:w-80">
-        <div className="border-border flex items-center justify-between border-b px-4 py-3">
+        <div className="border-border flex items-center gap-1 border-b px-4 py-3">
           <p className="text-xs font-medium">
             {selectedKeys.size}/{MAX_SELECTED} selected
           </p>
-          {contacts.length <= MAX_SELECTED && selectedKeys.size < contacts.length && (
-            <button
-              type="button"
+          {contacts.length <= MAX_SELECTED && selectedKeys.size === 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-primary h-7 text-xs font-medium"
               onClick={selectAll}
-              className="text-primary text-xs font-medium hover:underline"
             >
               Select All
-            </button>
+            </Button>
           )}
           {selectedKeys.size > 0 && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground h-7 text-xs"
               onClick={() => {
                 setSelectedKeys(new Set());
                 setActiveKey(null);
               }}
-              className="text-muted-foreground text-xs hover:underline"
             >
               Clear
-            </button>
+            </Button>
           )}
+          <Button
+            size="sm"
+            className="ml-auto h-7 gap-1 px-2.5 text-xs"
+            onClick={() => setBulkSendOpen(true)}
+            disabled={selectedKeys.size === 0}
+          >
+            <Send className="size-3" />
+            Send All
+          </Button>
         </div>
         <div className="divide-border divide-y">
           {[...grouped.entries()].map(([companyName, companyContacts]) => {
@@ -247,6 +260,12 @@ export function OutreachStep() {
           )}
         </div>
       </div>
+
+      <BulkSendDialog
+        open={bulkSendOpen}
+        onOpenChange={setBulkSendOpen}
+        contacts={selectedContacts}
+      />
     </div>
   );
 }
