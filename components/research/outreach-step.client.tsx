@@ -195,9 +195,9 @@ export function OutreachStep() {
   }
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row" style={{ minHeight: 'min(600px, 70vh)' }}>
+    <div className="flex flex-col gap-4 md:flex-row" style={{ height: 'min(700px, 70vh)' }}>
       {/* Contact sidebar */}
-      <Card className="w-full shrink-0 !gap-0 overflow-y-auto !py-0 md:w-72 lg:w-80">
+      <Card className="flex w-full shrink-0 flex-col !gap-0 overflow-hidden !py-0 md:w-72 lg:w-80">
         <div className="border-border flex items-center gap-1 border-b px-4 py-3">
           <p className="text-xs font-medium">
             {selectedKeys.size}/{MAX_SELECTED} selected
@@ -245,7 +245,11 @@ export function OutreachStep() {
           </div>
         )}
 
-        <Accordion type="multiple" defaultValue={companyNames}>
+        <Accordion
+          type="multiple"
+          defaultValue={companyNames}
+          className="min-h-0 flex-1 overflow-y-auto"
+        >
           {[...grouped.entries()].map(([companyName, companyContacts]) => {
             const contactedEmails = getContactedEmails(companyName);
             const contactCount = companyContacts.length;
@@ -338,7 +342,7 @@ export function OutreachStep() {
       </Card>
 
       {/* Email editor with tabs */}
-      <Card className="min-h-0 flex-1 !gap-0 !py-0">
+      <Card className="min-h-0 flex-1 !gap-0 overflow-hidden !py-0">
         {/* Tabs */}
         {selectedContacts.length > 0 && (
           <div className="border-border flex shrink-0 gap-0 overflow-x-auto border-b">

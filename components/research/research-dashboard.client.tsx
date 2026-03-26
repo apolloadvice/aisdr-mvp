@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Loader2, Check, ChevronRight } from 'lucide-react';
 import { useResearchStore } from '@/lib/store/research-store';
@@ -10,6 +10,7 @@ import { ConfirmStep } from './confirm-step';
 import { ResultsStep } from './results-step';
 import { OutreachStep } from './outreach-step.client';
 import { BottomNav } from './bottom-nav';
+import { EditableName } from '@/components/shared/editable-name.client';
 import type { ResearchSession } from '@/lib/types';
 import { MAX_WIDTH } from '@/lib/layout';
 
@@ -84,6 +85,16 @@ export function ResearchDashboard({ session }: { session: ResearchSession }) {
   const loadPreviouslyResearched = useResearchStore((s) => s.loadPreviouslyResearched);
   const sessionId = useResearchStore((s) => s.sessionId);
   const sessionName = useResearchStore((s) => s.sessionName);
+  const setSessionName = useResearchStore((s) => s.setSessionName);
+  const saveSession = useResearchStore((s) => s.saveSession);
+
+  const handleRenameSession = useCallback(
+    (name: string) => {
+      setSessionName(name);
+      saveSession();
+    },
+    [setSessionName, saveSession]
+  );
 
   const initRef = useRef(false);
 
@@ -134,9 +145,12 @@ export function ResearchDashboard({ session }: { session: ResearchSession }) {
                 </Link>
                 <ChevronRight className="text-border size-3 shrink-0" />
               </div>
-              <h1 className="text-foreground truncate text-2xl font-semibold tracking-tight">
-                {sessionName}
-              </h1>
+              <EditableName
+                value={sessionName}
+                onSave={handleRenameSession}
+                className="text-foreground text-2xl font-semibold tracking-tight"
+                inputClassName="text-2xl font-semibold tracking-tight !h-auto !py-1"
+              />
             </div>
             <SaveIndicator />
           </div>

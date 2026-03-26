@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2, Clock } from 'lucide-react';
+import { Trash2, Clock, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -17,8 +17,9 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { deleteSession } from '@/lib/api';
+import { deleteSession, updateSession } from '@/lib/api';
 import { formatRelativeDate } from '@/lib/utils';
+import { EditableName } from '@/components/shared/editable-name.client';
 import type { ResearchSessionSummary } from '@/lib/types';
 
 const STEP_LABELS: Record<string, string> = {
@@ -36,6 +37,16 @@ export function SessionsList({
   const router = useRouter();
   const [sessions, setSessions] = useState(initialSessions);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const handleRename = async (id: string, name: string) => {
+    try {
+      await updateSession(id, { name });
+      setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, name } : s)));
+    } catch {
+      toast.error('Failed to rename session');
+    }
+  };
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
@@ -76,7 +87,17 @@ export function SessionsList({
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="truncate text-sm font-medium">{session.name}</span>
+                  {editingId === session.id ? (
+                    <EditableName
+                      value={session.name}
+                      onSave={(name) => handleRename(session.id, name)}
+                      onDone={() => setEditingId(null)}
+                      initialEditing
+                      inputClassName="h-7 text-sm font-medium"
+                    />
+                  ) : (
+                    <span className="truncate text-sm font-medium">{session.name}</span>
+                  )}
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
                       session.status === 'completed'
@@ -104,6 +125,18 @@ export function SessionsList({
               </div>
 
               <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  label="Rename session"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingId(session.id);
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Pencil className="size-3.5" />
+                </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
