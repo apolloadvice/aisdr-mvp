@@ -1,73 +1,68 @@
 /*
- * DARK — Purple & Charcoal
- * Same purple primary and sand personality as the light theme,
- * inverted onto warm dark surfaces. Muted purple accents against
- * charcoal with a subtle warm undertone.
+ * DARK — Purple & Frost (Dark)
+ * Dark counterpart of the light "Purple & Frost" theme.
+ * Same purple personality, inverted onto deep violet-tinted surfaces.
  */
 
 [data-theme='dark'] body {
-  background-color: #121110;
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E"),
-    linear-gradient(170deg, #121110 0%, #151413 40%, #100f0e 100%);
-  background-attachment: fixed;
+  background-color: #110f18;
 }
 
 [data-theme='dark'] {
   /* Semantic tokens (oklch L C H) */
 
-  /* Purple primary lifted for dark bg, warm sand secondary, slate-blue tertiary */
-  --accent-primary: 0.7 0.18 290;
-  --accent-secondary: 0.58 0.04 70;
-  --accent-tertiary: 0.62 0.1 250;
+  /* Same purple hue family as light, lifted for dark bg */
+  --accent-primary: 0.7 0.18 288;
+  --accent-secondary: 0.6 0.03 280;
+  --accent-tertiary: 0.65 0.12 265;
 
-  /* Warm charcoal surfaces — sand undertone, not blue */
-  --surface-primary: 0.15 0.006 60;
-  --surface-secondary: 0.18 0.007 58;
-  --surface-elevated: 0.22 0.008 55;
-  --surface-overlay: 0.07 0.004 60;
+  /* Deep purple-tinted surfaces */
+  --surface-primary: 0.14 0.01 288;
+  --surface-secondary: 0.17 0.012 286;
+  --surface-elevated: 0.21 0.014 288;
+  --surface-overlay: 0.07 0.008 288;
 
-  /* Warm-tinted borders */
-  --border-default: 0.25 0.008 58;
-  --border-subtle: 0.21 0.006 60;
-  --border-strong: 0.35 0.01 55;
+  /* Purple-tinted borders */
+  --border-default: 0.24 0.015 288;
+  --border-subtle: 0.2 0.01 288;
+  --border-strong: 0.34 0.02 288;
 
-  /* Warm light text */
-  --text-primary: 0.93 0.005 70;
-  --text-secondary: 0.7 0.006 68;
-  --text-muted: 0.48 0.005 65;
-  --text-inverse: 0.14 0.005 70;
+  /* Purple-cool text (matching light hue) */
+  --text-primary: 0.93 0.006 288;
+  --text-secondary: 0.68 0.008 288;
+  --text-muted: 0.48 0.006 288;
+  --text-inverse: 0.14 0.012 288;
 
-  /* Deep warm elevations */
-  --elevation-sm: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
-  --elevation-md: 0 6px 20px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3);
-  --elevation-lg: 0 14px 36px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.35);
+  /* Purple-tinted elevations */
+  --elevation-sm: 0 2px 10px rgba(40, 20, 80, 0.5), 0 1px 4px rgba(40, 20, 80, 0.3);
+  --elevation-md: 0 6px 22px rgba(40, 20, 80, 0.55), 0 2px 6px rgba(40, 20, 80, 0.3);
+  --elevation-lg: 0 14px 40px rgba(40, 20, 80, 0.6), 0 4px 10px rgba(40, 20, 80, 0.35);
 
-  /* Tag tokens — matching light */
-  --tag-radius: 4px;
-  --tag-padding-x: 0.375rem;
-  --tag-padding-y: 0.125rem;
+  /* Tag tokens — matching light theme */
+  --tag-radius: 6px;
+  --tag-padding-x: 0.5rem;
+  --tag-padding-y: 0.1875rem;
   --tag-font-size: 0.6875rem;
 
-  /* Section label tokens */
+  /* Section label tokens — matching light (subtle, mixed case) */
   --section-label-size: 0.6875rem;
-  --section-label-tracking: 0.04em;
-  --section-label-transform: uppercase;
+  --section-label-tracking: 0.02em;
+  --section-label-transform: none;
 
-  /* Card style tokens */
-  --card-radius: 8px;
+  /* Card style tokens — matching light (shadow-based, medium radius) */
+  --card-radius: 12px;
   --card-border-width: 0px;
   --card-border-opacity: 0;
-  --card-shadow: none;
+  --card-shadow: var(--elevation-sm);
   --card-hover-shadow: var(--elevation-md);
   --card-hover-y: -1px;
   --card-accent-bar-height: 0px;
   --card-accent-bar-scale: 0;
 
-  /* Density tokens — information density */
-  --density-card-py: 1.5rem;
-  --density-card-px: 1.5rem;
-  --density-card-gap: 1.5rem;
+  /* Density tokens — matching light */
+  --density-card-py: 1.375rem;
+  --density-card-px: 1.375rem;
+  --density-card-gap: 1.375rem;
   --density-section-gap: 0.75rem;
 
   /* Font size scale */
@@ -75,76 +70,76 @@
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
 
-  /* Input/form tokens */
-  --input-radius: 0.375rem;
+  /* Input/form tokens — matching light */
+  --input-radius: 0.5rem;
   --input-border-width: 0px;
 
-  /* Button shape */
-  --button-radius: 0.375rem;
+  /* Button shape — matching light */
+  --button-radius: 0.5rem;
 
-  /* Chrome — header & bottom nav share component surface */
-  --chrome: #1a1918;
-  --header-border: #2a2826;
+  /* Chrome — header & bottom nav */
+  --chrome: #1a1726;
+  --header-border: #2d2740;
   --header-backdrop: none;
-  --bottom-nav-border: #2a2826;
+  --bottom-nav-border: #2d2740;
   --bottom-nav-backdrop: none;
 
   /* Signal badges — same hues as light, lifted for dark */
-  --signal-job-bg: hsl(220 50% 52% / 0.12);
-  --signal-job-text: hsl(220 55% 72%);
-  --signal-funding-bg: hsl(155 40% 42% / 0.12);
-  --signal-funding-text: hsl(155 45% 65%);
-  --signal-news-bg: hsl(42 70% 50% / 0.12);
-  --signal-news-text: hsl(38 65% 68%);
-  --signal-product-bg: hsl(270 35% 50% / 0.12);
-  --signal-product-text: hsl(270 40% 72%);
-  --signal-other-bg: hsl(0 0% 50% / 0.12);
-  --signal-other-text: hsl(0 0% 70%);
+  --signal-job-bg: hsl(240 50% 52% / 0.12);
+  --signal-job-text: hsl(240 55% 75%);
+  --signal-funding-bg: hsl(165 40% 42% / 0.12);
+  --signal-funding-text: hsl(165 45% 68%);
+  --signal-news-bg: hsl(38 60% 52% / 0.12);
+  --signal-news-text: hsl(38 60% 72%);
+  --signal-product-bg: hsl(275 40% 52% / 0.12);
+  --signal-product-text: hsl(275 40% 75%);
+  --signal-other-bg: hsl(265 10% 52% / 0.1);
+  --signal-other-text: hsl(265 10% 72%);
 
   /* shadcn bridge tokens */
-  --background: #121110;
-  --foreground: #e8e6e3;
-  --card: #1a1918;
-  --card-foreground: #e8e6e3;
-  --popover: #171615;
-  --popover-foreground: #e8e6e3;
-  --modal: #1a1918;
-  --modal-foreground: #e8e6e3;
-  --dropdown: #1a1918;
-  --dropdown-foreground: #e8e6e3;
-  --sheet: #1a1918;
-  --sheet-foreground: #e8e6e3;
-  --tabs: #1a1918;
-  --input-surface: #1a1918;
-  --primary: #a48efa;
-  --primary-foreground: #000000;
-  --secondary: #242220;
-  --secondary-foreground: #c4c0bc;
-  --muted: #1f1e1c;
-  --muted-foreground: #7a7774;
-  --accent: #212019;
-  --accent-foreground: #e8e6e3;
+  --background: #110f18;
+  --foreground: #e6e2ef;
+  --card: #1a1726;
+  --card-foreground: #e6e2ef;
+  --popover: #1a1726;
+  --popover-foreground: #e6e2ef;
+  --modal: #1a1726;
+  --modal-foreground: #e6e2ef;
+  --dropdown: #1e1a2d;
+  --dropdown-foreground: #e6e2ef;
+  --sheet: #1a1726;
+  --sheet-foreground: #e6e2ef;
+  --tabs: #1a1726;
+  --input-surface: #1a1726;
+  --primary: #9b7af0;
+  --primary-foreground: #0e0c15;
+  --secondary: #231f33;
+  --secondary-foreground: #c8c1d8;
+  --muted: #1e1a2c;
+  --muted-foreground: #847a9e;
+  --accent: #231f33;
+  --accent-foreground: #e6e2ef;
   --destructive: hsl(0 65% 55%);
   --destructive-foreground: #ffffff;
-  --border: #2a2826;
-  --input: #2a2826;
-  --ring: #a48efa;
-  --radius: 0.5rem;
+  --border: #2d2740;
+  --input: #2d2740;
+  --ring: #9b7af0;
+  --radius: 0.625rem;
 
-  /* Chart palette — same hues, lifted for dark bg */
-  --chart-1: #a48efa;
-  --chart-2: hsl(220 50% 58%);
-  --chart-3: hsl(155 40% 52%);
-  --chart-4: hsl(270 40% 60%);
-  --chart-5: hsl(12 55% 58%);
+  /* Chart palette — same hues as light, lifted */
+  --chart-1: #9b7af0;
+  --chart-2: hsl(240 50% 62%);
+  --chart-3: hsl(165 42% 52%);
+  --chart-4: hsl(288 42% 62%);
+  --chart-5: hsl(18 55% 58%);
 
   /* Sidebar */
-  --sidebar-background: #151413;
-  --sidebar-foreground: #7a7774;
-  --sidebar-primary: #a48efa;
-  --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #1f1e1c;
-  --sidebar-accent-foreground: #e8e6e3;
-  --sidebar-border: #242220;
-  --sidebar-ring: #a48efa;
+  --sidebar-background: #14121c;
+  --sidebar-foreground: #847a9e;
+  --sidebar-primary: #9b7af0;
+  --sidebar-primary-foreground: #0e0c15;
+  --sidebar-accent: #1e1a2c;
+  --sidebar-accent-foreground: #e6e2ef;
+  --sidebar-border: #2d2740;
+  --sidebar-ring: #9b7af0;
 }
