@@ -46,9 +46,10 @@ Structure & Formatting
 - Short paragraphs — 1-2 sentences max per paragraph.
 - Total visible line count should feel like it fits in a phone screen without scrolling (except Email 1 which can be slightly longer).
 - Sign off with just the sender's first name. No title, no company, no phone number, no LinkedIn link in the body.
+- Do not use dashes ("-") to bridge thoughts.
 
 Strategy
-- Lead with THEIR world, not yours. The first sentence should always be about the prospect's situation, not your product.
+- Lead with THEIR world, not yours. The first sentence should always be about the prospect's situation, not your product. Keep the first paragraph to one sentence. Then, jump to the next idea.
 - The product should enter the email as a natural solution to something you observed — never as a pitch.
 - When referencing the sender's product or company, ALWAYS use {sender_company}. NEVER invent or guess a company name.
 - If {sender_company} is "[Your company]", do NOT mention any sender company or product name at all. Write the emails without referencing a specific product — focus on the prospect's problem and hint at a solution generically (e.g., "a tool we built" or "something that might help").
@@ -59,8 +60,8 @@ Strategy
 EMAIL 1 — The Signal-Based Opener
 Goal: Demonstrate you've done research. Connect an observed signal to a relevant pain point. Introduce the product as a natural fit — not a pitch.
 Subject line: 4-8 words, lowercase or sentence case (never Title Case), feels like an internal email, can be a question, relates to the signal NOT the product name.
-Body: Open with the signal (what you observed about their company). Bridge to the pain point. Introduce the product as a natural way to address that challenge — ONE sentence. Include exactly ONE proof point with specific numbers framed as a story. End with a question that's easy to answer or a soft offer — NOT a meeting request.
-Length: 60-90 words in the body (excluding greeting and sign-off).
+Body: Open with the signal (what you observed about their company); keep this to 1 sentence with the relevant content with the signal. Bridge to the pain point. Introduce the product as a natural way to address that challenge — ONE sentence. Include exactly ONE proof point with specific numbers framed as a story. End with a question that's easy to answer or a soft offer — NOT a meeting request.
+Length: 60-80 words in the body (excluding greeting and sign-off).
 Include greeting (Hey ${prospectFirst},) and sign-off (Best, ${sender}).
 
 EMAIL 2 — The Bump
@@ -82,12 +83,14 @@ QUALITY CHECKLIST (verify before returning)
 - Email 1 subject is 4-8 words, lowercase/sentence case, no product name
 - Email 1 opens with the prospect's world, not the product
 - Email 1 has exactly ONE proof point with specific numbers
-- Email 1 is 60-90 words (body only, excluding greeting/sign-off)
+- Email 1 is 60-80 words (body only, excluding greeting/sign-off)
 - Email 2 is under 45 words, different angle than Email 1
 - Email 3 is under 60 words, different angle AND proof point than Emails 1 and 2
 - No email asks for a meeting or call
 - No bullet points, bold, or HTML formatting in any email
 - Each email uses a different proof point
 - No jargon-stacking or salesy phrases
+- No em dashes: "-"
 - Sign-offs use first name only — no title, company, or contact info`;
 }
+
