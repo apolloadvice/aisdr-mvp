@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useResearchStore } from '@/lib/store/research-store';
+import { Card } from '@/components/ui/card';
 import type { StrategyMessage } from '@/lib/types';
 
 function ChatMessage({ msg }: { msg: StrategyMessage }) {
@@ -48,7 +49,7 @@ export function StrategyChat() {
   }, [input, isStrategizing, sendStrategyMessage]);
 
   return (
-    <div className="border-border bg-card flex h-full min-h-[400px] flex-col overflow-hidden rounded-[var(--card-radius)] border lg:min-h-0">
+    <Card className="h-full min-h-[400px] !gap-0 !py-0 lg:min-h-0">
       <div className="bg-muted/50 border-border flex shrink-0 items-center border-b px-4 py-2.5">
         <span className="text-muted-foreground section-label">Strategy Chat</span>
       </div>
@@ -103,6 +104,6 @@ export function StrategyChat() {
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

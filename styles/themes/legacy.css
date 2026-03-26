@@ -1,0 +1,138 @@
+/*
+ * LEGACY — Purple & Sand (original light theme)
+ * Violet primary, warm sand neutrals, crisp white surfaces.
+ * Clean, data-dense, professional sales tool aesthetic.
+ */
+
+[data-theme='legacy'] body {
+  background-color: #f7f7f5;
+}
+
+[data-theme='legacy'] {
+  /* Semantic tokens (oklch L C H) */
+
+  /* Purple primary, warm sand secondary, slate-blue tertiary */
+  --accent-primary: 0.55 0.2 290;
+  --accent-secondary: 0.62 0.04 70;
+  --accent-tertiary: 0.52 0.1 250;
+
+  /* Crisp white surfaces with warm sand undertone */
+  --surface-primary: 0.995 0.002 80;
+  --surface-secondary: 0.97 0.005 75;
+  --surface-elevated: 1 0 0;
+  --surface-overlay: 0.12 0.005 70;
+
+  /* Sand-tinted borders — barely there */
+  --border-default: 0.92 0.006 75;
+  --border-subtle: 0.95 0.004 80;
+  --border-strong: 0.84 0.01 70;
+
+  /* Near-black text with warm neutrals */
+  --text-primary: 0.15 0.005 70;
+  --text-secondary: 0.42 0.006 70;
+  --text-muted: 0.58 0.005 70;
+  --text-inverse: 0.98 0.003 80;
+
+  /* Subtle warm elevations */
+  --elevation-sm: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --elevation-md: 0 6px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --elevation-lg: 0 12px 36px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+
+  /* Tag tokens — compact rounded */
+  --tag-radius: 4px;
+  --tag-padding-x: 0.375rem;
+  --tag-padding-y: 0.125rem;
+  --tag-font-size: 0.6875rem;
+
+  /* Section label tokens — clean, understated */
+  --section-label-size: 0.6875rem;
+  --section-label-tracking: 0.04em;
+  --section-label-transform: uppercase;
+
+  /* Card style tokens — subtle, data-focused */
+  --card-radius: 8px;
+  --card-border-width: 0px;
+  --card-border-opacity: 0;
+  --card-shadow: var(--elevation-sm);
+  --card-hover-shadow: var(--elevation-md);
+  --card-hover-y: -1px;
+  --card-accent-bar-height: 0px;
+  --card-accent-bar-scale: 0;
+
+  /* Density tokens — information density */
+  --density-card-py: 1.5rem;
+  --density-card-px: 1.5rem;
+  --density-card-gap: 1.5rem;
+  --density-section-gap: 0.75rem;
+
+  /* Font size scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+
+  /* Input/form tokens */
+  --input-radius: 0.375rem;
+  --input-border-width: 0px;
+
+  /* Button shape */
+  --button-radius: 0.375rem;
+
+  /* Header — solid white, sand border */
+  --header-bg: #ffffff;
+  --header-border: #e8e6e3;
+  --header-backdrop: none;
+  --bottom-nav-bg: rgba(255, 255, 255, 0.92);
+  --bottom-nav-border: #e8e6e3;
+  --bottom-nav-backdrop: blur(8px);
+
+  /* Signal badges — muted pastels */
+  --signal-job-bg: hsl(220 50% 52% / 0.08);
+  --signal-job-text: hsl(220 45% 42%);
+  --signal-funding-bg: hsl(155 40% 42% / 0.08);
+  --signal-funding-text: hsl(155 35% 32%);
+  --signal-news-bg: hsl(42 70% 50% / 0.1);
+  --signal-news-text: hsl(35 55% 35%);
+  --signal-product-bg: hsl(270 35% 50% / 0.08);
+  --signal-product-text: hsl(270 30% 40%);
+  --signal-other-bg: hsl(0 0% 50% / 0.08);
+  --signal-other-text: hsl(0 0% 40%);
+
+  /* shadcn bridge tokens */
+  --background: #f7f7f5;
+  --foreground: rgba(0, 0, 0, 0.87);
+  --card: #ffffff;
+  --card-foreground: rgba(0, 0, 0, 0.87);
+  --popover: #ffffff;
+  --popover-foreground: rgba(0, 0, 0, 0.87);
+  --primary: #6f42d6;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f4f2;
+  --secondary-foreground: #3d3b38;
+  --muted: #f0efed;
+  --muted-foreground: #7a7774;
+  --accent: #f0efed;
+  --accent-foreground: rgba(0, 0, 0, 0.87);
+  --destructive: hsl(0 65% 50%);
+  --destructive-foreground: #ffffff;
+  --border: #e8e6e3;
+  --input: #e8e6e3;
+  --ring: #6f42d6;
+  --radius: 0.5rem;
+
+  /* Chart palette — purple, blue, green, warm spread */
+  --chart-1: #6f42d6;
+  --chart-2: hsl(220 50% 48%);
+  --chart-3: hsl(155 40% 42%);
+  --chart-4: hsl(270 35% 50%);
+  --chart-5: hsl(12 55% 50%);
+
+  /* Sidebar */
+  --sidebar-background: #ffffff;
+  --sidebar-foreground: #7a7774;
+  --sidebar-primary: #6f42d6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f4f2;
+  --sidebar-accent-foreground: rgba(0, 0, 0, 0.87);
+  --sidebar-border: #e8e6e3;
+  --sidebar-ring: #6f42d6;
+}

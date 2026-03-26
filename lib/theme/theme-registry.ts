@@ -15,13 +15,13 @@ export const themes: ThemeDefinition[] = [
   {
     id: 'light',
     name: 'Light',
-    description: 'Purple and sand on white',
+    description: 'Purple frost — modern, clean, balanced',
     isDark: false,
     previewColors: {
-      bg: '#f7f7f5',
-      primary: '#6f42d6',
-      secondary: '#7a7774',
-      tertiary: 'hsl(220, 50%, 48%)'
+      bg: '#f4f2fb',
+      primary: '#7950e8',
+      secondary: '#807498',
+      tertiary: '#6366f1'
     }
   },
   {
@@ -34,6 +34,18 @@ export const themes: ThemeDefinition[] = [
       primary: '#a48efa',
       secondary: '#7a7774',
       tertiary: 'hsl(220, 50%, 58%)'
+    }
+  },
+  {
+    id: 'legacy',
+    name: 'Legacy',
+    description: 'Original — warm sand neutrals on white',
+    isDark: false,
+    previewColors: {
+      bg: '#f7f7f5',
+      primary: '#6f42d6',
+      secondary: '#7a7774',
+      tertiary: 'hsl(220, 50%, 48%)'
     }
   }
 ];

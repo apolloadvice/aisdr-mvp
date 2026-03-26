@@ -20,6 +20,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import type { ComposeEmailParams, GeneratedEmail } from '@/lib/types';
@@ -56,7 +57,7 @@ function EmailPreview({
   signatureBody: string | null;
 }) {
   return (
-    <div className="bg-muted/30 border-border flex h-full flex-col rounded-lg border">
+    <Card className="bg-muted/30 h-full !gap-0 !py-0">
       <div className="border-border space-y-1 border-b px-4 py-3">
         <div className="flex items-baseline gap-2">
           <span className="text-muted-foreground text-xs font-medium">To:</span>
@@ -86,7 +87,7 @@ function EmailPreview({
           </>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
 

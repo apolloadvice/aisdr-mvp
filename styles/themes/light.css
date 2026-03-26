@@ -1,120 +1,138 @@
 /*
- * LIGHT — Purple & Sand
- * Violet primary, warm sand neutrals, crisp white surfaces.
- * Clean, data-dense, professional sales tool aesthetic.
+ * LIGHT — Purple & Frost
+ * Purple-tinted surfaces, medium radius, modern and clean.
+ * The default light theme.
  */
 
 [data-theme='light'] body {
-  background-color: #f7f7f5;
+  background-color: #f4f2fb;
 }
 
 [data-theme='light'] {
   /* Semantic tokens (oklch L C H) */
 
-  /* Purple primary, warm sand secondary, slate-blue tertiary */
-  --accent-primary: 0.55 0.2 290;
-  --accent-secondary: 0.62 0.04 70;
-  --accent-tertiary: 0.52 0.1 250;
+  /* Bright violet primary, cool gray secondary, periwinkle tertiary */
+  --accent-primary: 0.56 0.2 288;
+  --accent-secondary: 0.55 0.03 280;
+  --accent-tertiary: 0.58 0.12 265;
 
-  /* Crisp white surfaces with warm sand undertone */
-  --surface-primary: 0.995 0.002 80;
-  --surface-secondary: 0.97 0.005 75;
-  --surface-elevated: 1 0 0;
-  --surface-overlay: 0.12 0.005 70;
+  /* Translucent purple-tinted surfaces */
+  --surface-primary: 0.975 0.008 288;
+  --surface-secondary: 0.955 0.012 286;
+  --surface-elevated: 0.99 0.004 288;
+  --surface-overlay: 0.1 0.01 288;
 
-  /* Sand-tinted borders — barely there */
-  --border-default: 0.92 0.006 75;
-  --border-subtle: 0.95 0.004 80;
-  --border-strong: 0.84 0.01 70;
+  /* Semi-visible purple borders */
+  --border-default: 0.9 0.015 288;
+  --border-subtle: 0.93 0.01 288;
+  --border-strong: 0.8 0.025 288;
 
-  /* Near-black text with warm neutrals */
-  --text-primary: 0.15 0.005 70;
-  --text-secondary: 0.42 0.006 70;
-  --text-muted: 0.58 0.005 70;
-  --text-inverse: 0.98 0.003 80;
+  /* Purple-cool text */
+  --text-primary: 0.14 0.012 288;
+  --text-secondary: 0.38 0.01 288;
+  --text-muted: 0.55 0.008 288;
+  --text-inverse: 0.98 0.005 288;
 
-  /* Subtle warm shadows */
-  --shadow-sm: -1px -0.5px 2px rgba(0, 0, 0, 0.03), 2px 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: -2px -1px 4px rgba(0, 0, 0, 0.04), 6px 6px 8px rgba(0, 0, 0, 0.04);
-  --shadow-lg: -3px -2px 6px rgba(0, 0, 0, 0.04), 12px 12px 16px rgba(0, 0, 0, 0.05);
+  /* Frosted purple elevations with blur feel */
+  --elevation-sm: 0 2px 10px rgba(100, 60, 180, 0.1), 0 1px 4px rgba(100, 60, 180, 0.06);
+  --elevation-md: 0 6px 22px rgba(100, 60, 180, 0.12), 0 2px 6px rgba(100, 60, 180, 0.06);
+  --elevation-lg: 0 12px 40px rgba(100, 60, 180, 0.15), 0 4px 10px rgba(100, 60, 180, 0.07);
 
-  /* Tag tokens — compact rounded */
-  --tag-radius: 4px;
-  --tag-padding-x: 0.375rem;
-  --tag-padding-y: 0.125rem;
+  /* Tag tokens — soft rounded, medium */
+  --tag-radius: 6px;
+  --tag-padding-x: 0.5rem;
+  --tag-padding-y: 0.1875rem;
   --tag-font-size: 0.6875rem;
 
-  /* Section label tokens — clean, understated */
+  /* Section label tokens — subtle, mixed case */
   --section-label-size: 0.6875rem;
-  --section-label-tracking: 0.04em;
-  --section-label-transform: uppercase;
+  --section-label-tracking: 0.02em;
+  --section-label-transform: none;
 
-  /* Card style tokens — subtle, data-focused */
-  --card-radius: 8px;
-  --card-border-width: 1px;
-  --card-border-opacity: 0.6;
-  --card-shadow: var(--shadow-sm);
-  --card-hover-shadow: var(--shadow-md);
+  /* Card style tokens — glass effect, medium radius, soft border */
+  --card-radius: 12px;
+  --card-border-width: 0px;
+  --card-border-opacity: 0;
+  --card-shadow: var(--elevation-sm);
+  --card-hover-shadow: var(--elevation-md);
   --card-hover-y: -1px;
   --card-accent-bar-height: 0px;
   --card-accent-bar-scale: 0;
 
-  /* Header — solid white, sand border */
-  --header-bg: #ffffff;
-  --header-border: #e8e6e3;
-  --header-backdrop: none;
-  --bottom-nav-bg: rgba(255, 255, 255, 0.92);
-  --bottom-nav-border: #e8e6e3;
-  --bottom-nav-backdrop: blur(8px);
+  /* Density tokens — balanced */
+  --density-card-py: 1.375rem;
+  --density-card-px: 1.375rem;
+  --density-card-gap: 1.375rem;
+  --density-section-gap: 0.75rem;
 
-  /* Signal badges — muted pastels */
-  --signal-job-bg: hsl(220 50% 52% / 0.08);
-  --signal-job-text: hsl(220 45% 42%);
-  --signal-funding-bg: hsl(155 40% 42% / 0.08);
-  --signal-funding-text: hsl(155 35% 32%);
-  --signal-news-bg: hsl(42 70% 50% / 0.1);
-  --signal-news-text: hsl(35 55% 35%);
-  --signal-product-bg: hsl(270 35% 50% / 0.08);
-  --signal-product-text: hsl(270 30% 40%);
-  --signal-other-bg: hsl(0 0% 50% / 0.08);
-  --signal-other-text: hsl(0 0% 40%);
+  /* Font size scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+
+  /* Input/form tokens — medium rounded */
+  --input-radius: 0.5rem;
+  --input-border-width: 0px;
+
+  /* Button shape — medium rounded */
+  --button-radius: 0.5rem;
+
+  /* Header — solid purple-tinted */
+  --header-bg: #f4f2fb;
+  --header-border: #ddd8ec;
+  --header-backdrop: none;
+  --bottom-nav-bg: #f4f2fb;
+  --bottom-nav-border: #ddd8ec;
+  --bottom-nav-backdrop: none;
+
+  /* Signal badges */
+  --signal-job-bg: hsl(240 50% 52% / 0.08);
+  --signal-job-text: hsl(240 42% 44%);
+  --signal-funding-bg: hsl(165 40% 42% / 0.08);
+  --signal-funding-text: hsl(165 35% 32%);
+  --signal-news-bg: hsl(38 60% 52% / 0.09);
+  --signal-news-text: hsl(38 50% 36%);
+  --signal-product-bg: hsl(275 40% 52% / 0.08);
+  --signal-product-text: hsl(275 35% 40%);
+  --signal-other-bg: hsl(265 10% 52% / 0.07);
+  --signal-other-text: hsl(265 10% 40%);
 
   /* shadcn bridge tokens */
-  --background: #f7f7f5;
-  --foreground: rgba(0, 0, 0, 0.87);
+  --background: #f4f2fb;
+  --foreground: #1e1535;
   --card: #ffffff;
-  --card-foreground: rgba(0, 0, 0, 0.87);
+  --card-foreground: #1e1535;
   --popover: #ffffff;
-  --popover-foreground: rgba(0, 0, 0, 0.87);
-  --primary: #6f42d6;
+  --popover-foreground: #1e1535;
+  --primary: #7950e8;
   --primary-foreground: #ffffff;
-  --secondary: #f5f4f2;
-  --secondary-foreground: #3d3b38;
-  --muted: #f0efed;
-  --muted-foreground: #7a7774;
-  --accent: #f0efed;
-  --accent-foreground: rgba(0, 0, 0, 0.87);
+  --secondary: #eeebf7;
+  --secondary-foreground: #352a54;
+  --muted: #e9e4f5;
+  --muted-foreground: #807498;
+  --accent: #e9e4f5;
+  --accent-foreground: #1e1535;
   --destructive: hsl(0 65% 50%);
   --destructive-foreground: #ffffff;
-  --border: #e8e6e3;
-  --input: #e8e6e3;
-  --ring: #6f42d6;
-  --radius: 0.5rem;
+  --border: #ddd8ec;
+  --input: #dbd5ea;
+  --ring: #7950e8;
+  --radius: 0.625rem;
 
-  /* Chart palette — purple, blue, green, warm spread */
-  --chart-1: #6f42d6;
-  --chart-2: hsl(220 50% 48%);
-  --chart-3: hsl(155 40% 42%);
-  --chart-4: hsl(270 35% 50%);
-  --chart-5: hsl(12 55% 50%);
+  /* Chart palette */
+  --chart-1: #7950e8;
+  --chart-2: hsl(240 50% 50%);
+  --chart-3: hsl(165 42% 40%);
+  --chart-4: hsl(288 42% 52%);
+  --chart-5: hsl(18 55% 52%);
 
   /* Sidebar */
   --sidebar-background: #ffffff;
-  --sidebar-foreground: #7a7774;
-  --sidebar-primary: #6f42d6;
+  --sidebar-foreground: #807498;
+  --sidebar-primary: #7950e8;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5f4f2;
-  --sidebar-accent-foreground: rgba(0, 0, 0, 0.87);
-  --sidebar-border: #e8e6e3;
-  --sidebar-ring: #6f42d6;
+  --sidebar-accent: #eeeaf6;
+  --sidebar-accent-foreground: #1e1535;
+  --sidebar-border: #ddd8ec;
+  --sidebar-ring: #7950e8;
 }

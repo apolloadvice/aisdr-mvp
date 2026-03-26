@@ -7,7 +7,7 @@ import type { UncontactedCompany } from '@/lib/types';
 
 export function UncontactedList({ companies }: { companies: UncontactedCompany[] }) {
   return (
-    <div className="bg-card border-border rounded-(--card-radius) border p-5">
+    <div className="bg-card rounded-(--card-radius) px-[var(--density-card-px)] py-[var(--density-card-py)] shadow-xs">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-baseline gap-2">

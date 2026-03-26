@@ -1,9 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { FileText, BookOpen, ChevronDown } from 'lucide-react';
+import { useEffect } from 'react';
+import { FileText, BookOpen } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { useResearchStore } from '@/lib/store/research-store';
 import { useICPStore } from '@/lib/store/icp-store';
 import { EXAMPLE_CUSTOMER_INPUT } from '@/lib/services/config';
@@ -13,7 +20,6 @@ function ICPPicker() {
   const loadICPs = useICPStore((s) => s.loadICPs);
   const isLoading = useICPStore((s) => s.isLoading);
   const setTranscript = useResearchStore((s) => s.setTranscript);
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     loadICPs();
@@ -30,46 +36,35 @@ function ICPPicker() {
     });
     useResearchStore.getState().saveSession();
     useResearchStore.getState().generateStrategy();
-    setOpen(false);
   };
 
   return (
-    <div className="relative">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setOpen(!open)}
-        className="text-muted-foreground"
-      >
-        <BookOpen className="size-3.5" />
-        Load saved ICP
-        <ChevronDown className={`size-3 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </Button>
-
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="border-border bg-card absolute bottom-full left-0 z-20 mb-1 w-full overflow-hidden rounded-lg border shadow-lg sm:w-72">
-            {isLoading ? (
-              <div className="text-muted-foreground px-4 py-3 text-xs">Loading...</div>
-            ) : (
-              icps.map((savedIcp) => (
-                <button
-                  key={savedIcp.id}
-                  onClick={() => handleSelect(savedIcp)}
-                  className="hover:bg-muted/50 w-full px-4 py-2.5 text-left transition-colors"
-                >
-                  <span className="block truncate text-sm font-medium">{savedIcp.name}</span>
-                  <span className="text-muted-foreground block truncate text-xs">
-                    {savedIcp.icp.description.slice(0, 80)}...
-                  </span>
-                </button>
-              ))
-            )}
-          </div>
-        </>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm" className="text-muted-foreground">
+          <BookOpen className="size-3.5" />
+          Load saved ICP
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-72">
+        {isLoading ? (
+          <div className="text-muted-foreground px-2 py-3 text-xs">Loading...</div>
+        ) : (
+          icps.map((savedIcp) => (
+            <DropdownMenuItem
+              key={savedIcp.id}
+              onClick={() => handleSelect(savedIcp)}
+              className="flex-col items-start gap-0"
+            >
+              <span className="truncate text-sm font-medium">{savedIcp.name}</span>
+              <span className="text-muted-foreground truncate text-xs">
+                {savedIcp.icp.description.slice(0, 80)}...
+              </span>
+            </DropdownMenuItem>
+          ))
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -91,7 +86,7 @@ export function TranscriptStep() {
 
       {error && <p className="text-destructive mb-4 text-sm">{error}</p>}
 
-      <div className="border-border bg-card overflow-hidden rounded-[var(--card-radius)] border">
+      <Card className="!gap-0 !py-0">
         <div className="bg-muted/50 border-border flex items-center justify-between border-b px-4 py-2.5">
           <span className="text-muted-foreground section-label">Customer Profile</span>
           {transcript.trim() && (
@@ -124,7 +119,7 @@ export function TranscriptStep() {
           </Button>
           <ICPPicker />
         </div>
-      </div>
+      </Card>
     </>
   );
 }

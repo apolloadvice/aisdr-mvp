@@ -122,11 +122,9 @@ export function StrategyStep() {
           <div className="lg:hidden">
             <button
               onClick={() => setIcpOpen(!icpOpen)}
-              className="bg-card border-border flex w-full items-center justify-between rounded-[var(--card-radius)] border px-4 py-3"
+              className="bg-card flex w-full items-center justify-between rounded-[var(--card-radius)] px-4 py-3 shadow-xs"
             >
-              <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-                Customer Profile
-              </span>
+              <span className="text-muted-foreground section-label">Customer Profile</span>
               <ChevronDown
                 className={`text-muted-foreground size-4 transition-transform duration-200 ${icpOpen ? 'rotate-180' : ''}`}
               />

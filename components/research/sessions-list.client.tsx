@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, Clock, Loader2 } from 'lucide-react';
+import { Trash2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +17,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { createSession, deleteSession } from '@/lib/api';
+import { deleteSession } from '@/lib/api';
 import { formatRelativeDate } from '@/lib/utils';
 import type { ResearchSessionSummary } from '@/lib/types';
 
@@ -35,18 +36,6 @@ export function SessionsList({
   const router = useRouter();
   const [sessions, setSessions] = useState(initialSessions);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-
-  const handleCreate = async () => {
-    setIsCreating(true);
-    try {
-      const session = await createSession();
-      router.push(`/research/${session.id}`);
-    } catch {
-      toast.error('Failed to create session');
-      setIsCreating(false);
-    }
-  };
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
@@ -63,28 +52,14 @@ export function SessionsList({
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">
-          Resume a previous session or start a new one.
-        </p>
-        <Button onClick={handleCreate} disabled={isCreating}>
-          {isCreating ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-          New Research
-        </Button>
-      </div>
-
       {sessions.length === 0 ? (
-        <div className="border-border bg-card rounded-(--card-radius) border py-16 text-center">
+        <Card className="py-16 text-center">
           <p className="text-muted-foreground text-sm">
             No sessions yet. Start your first research.
           </p>
-          <Button onClick={handleCreate} disabled={isCreating} className="mt-4" variant="outline">
-            {isCreating ? <Loader2 className="size-4 animate-spin" /> : null}
-            Start Research
-          </Button>
-        </div>
+        </Card>
       ) : (
-        <div className="border-border bg-card overflow-hidden rounded-(--card-radius) border">
+        <Card className="!gap-0 !py-0">
           {sessions.map((session, i) => (
             <div
               key={session.id}
@@ -158,7 +133,7 @@ export function SessionsList({
               </div>
             </div>
           ))}
-        </div>
+        </Card>
       )}
     </>
   );

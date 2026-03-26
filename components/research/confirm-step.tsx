@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { LoadingStatus } from './loading-status';
 import { StrategyChat } from './strategy-chat.client';
 import { useResearchStore } from '@/lib/store/research-store';
+import { Card } from '@/components/ui/card';
 import type { DiscoveredCompanyPreview } from '@/lib/types';
 
 const MAX_SELECTED = 5;
@@ -277,7 +278,7 @@ export function ConfirmStep() {
             </div>
           )}
 
-          <div className="border-border bg-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-[var(--card-radius)] border">
+          <Card className="min-h-0 flex-1 !gap-0 !py-0">
             {/* Header */}
             <div className="bg-muted/50 border-border flex shrink-0 items-center gap-4 border-b px-4 py-2.5">
               {allFiltered && (
@@ -371,7 +372,7 @@ export function ConfirmStep() {
                 </button>
               )}
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

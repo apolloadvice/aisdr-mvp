@@ -20,7 +20,7 @@ export function Pipeline({ funnel }: { funnel: Funnel }) {
   ];
 
   return (
-    <div className="bg-card border-border rounded-(--card-radius) border p-5">
+    <div className="bg-card rounded-(--card-radius) px-[var(--density-card-px)] py-[var(--density-card-py)] shadow-xs">
       <div className="grid grid-cols-2 gap-x-4 gap-y-5 md:flex md:items-center md:justify-between md:gap-0">
         {steps.map((step, i) => {
           const content = (

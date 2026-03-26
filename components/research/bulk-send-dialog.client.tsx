@@ -11,6 +11,7 @@ import {
   DialogTitle
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { sendEmail as sendEmailApi, getGmailStatus } from '@/lib/api';
 import { useResearchStore } from '@/lib/store/research-store';
@@ -207,10 +208,7 @@ export function BulkSendDialog({
             {drafts.map((draft, i) => {
               const email = getEmail(draft);
               return (
-                <div
-                  key={draft.contact.key}
-                  className="border-border bg-muted/30 rounded-lg border p-3"
-                >
+                <Card key={draft.contact.key} className="bg-muted/30 !gap-0 p-3">
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5 shrink-0">
                       {draft.status === 'sending' && (
@@ -257,7 +255,7 @@ export function BulkSendDialog({
                       </div>
                     )}
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>

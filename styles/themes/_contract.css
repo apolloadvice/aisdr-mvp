@@ -41,10 +41,28 @@
  * --text-muted            Placeholders, disabled, hint text
  * --text-inverse          Text on inverse/accent surfaces
  *
- * SHADOWS — full CSS shadow values (not oklch components)
- * --shadow-sm             Subtle lift (buttons, inputs)
- * --shadow-md             Medium elevation (cards, dropdowns)
- * --shadow-lg             High elevation (modals, popovers)
+ * ELEVATIONS — full CSS shadow values (not oklch components)
+ * --elevation-sm          Subtle lift (buttons, inputs)
+ * --elevation-md          Medium elevation (cards, dropdowns)
+ * --elevation-lg          High elevation (modals, popovers)
+ *
+ * DENSITY — information density control
+ * --density-card-py       Card vertical padding
+ * --density-card-px       Card horizontal padding
+ * --density-card-gap      Gap between card sections
+ * --density-section-gap   Gap between content sections
+ *
+ * FONT SIZE SCALE — themeable type scale
+ * --font-size-xs          Extra small text (labels, badges)
+ * --font-size-sm          Small text (body, UI labels)
+ * --font-size-base        Base text (inputs, primary content)
+ *
+ * INPUT STYLING — form field shape
+ * --input-radius          Input/textarea/select border radius
+ * --input-border-width    Input/textarea/select border width
+ *
+ * BUTTON SHAPE
+ * --button-radius         Button border radius
  */
 
 /* ═══════════════════════════════════════════════════════════════════

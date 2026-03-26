@@ -5,6 +5,7 @@
 /* Theme files */
 @import './themes/light.css';
 @import './themes/dark.css';
+@import './themes/legacy.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -67,6 +68,18 @@
   --color-border-default: oklch(var(--border-default) / <alpha-value>);
   --color-border-subtle: oklch(var(--border-subtle) / <alpha-value>);
   --color-border-strong: oklch(var(--border-strong) / <alpha-value>);
+
+  /* Elevation → Tailwind shadow utilities */
+  --shadow-2xs: var(--elevation-sm);
+  --shadow-xs: var(--elevation-sm);
+  --shadow-sm: var(--elevation-sm);
+  --shadow-md: var(--elevation-md);
+  --shadow-lg: var(--elevation-lg);
+
+  /* Font size scale → Tailwind text utilities */
+  --text-xs: var(--font-size-xs);
+  --text-sm: var(--font-size-sm);
+  --text-base: var(--font-size-base);
 }
 
 /* Font switching via data-font attribute */

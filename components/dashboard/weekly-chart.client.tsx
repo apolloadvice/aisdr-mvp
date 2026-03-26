@@ -9,7 +9,7 @@ export function WeeklyChart({ data }: { data: WeeklyEmail[] }) {
   const total = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <div className="bg-card border-border rounded-(--card-radius) border p-5">
+    <div className="bg-card rounded-(--card-radius) px-[var(--density-card-px)] py-[var(--density-card-py)] shadow-xs">
       <div className="mb-5 flex items-baseline justify-between">
         <div>
           <h3 className="text-foreground text-sm font-medium">Weekly Activity</h3>

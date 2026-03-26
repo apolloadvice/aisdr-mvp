@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Mail, ExternalLink, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Sheet,
   SheetContent,
@@ -99,13 +100,10 @@ export function SentEmailsPage({ emails }: { emails: SentEmail[] }) {
 
   return (
     <div className={`mx-auto ${MAX_WIDTH} px-4 py-10 md:px-6`}>
-      <div className="mb-6 flex items-center gap-3">
-        <div className="bg-accent-secondary/10 flex size-9 items-center justify-center rounded-lg">
-          <Mail className="text-accent-secondary size-4" />
-        </div>
+      <div className="mb-8 flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-foreground text-lg font-semibold">Sent Emails</h1>
-          <p className="text-muted-foreground text-xs">
+          <h1 className="text-foreground text-2xl font-semibold tracking-tight">Sent Emails</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             {emails.length === 0
               ? 'No emails sent yet'
               : `${emails.length} email${emails.length === 1 ? '' : 's'} sent`}
@@ -113,15 +111,15 @@ export function SentEmailsPage({ emails }: { emails: SentEmail[] }) {
         </div>
         <Link
           href="/research"
-          className="text-muted-foreground hover:text-foreground ml-auto flex items-center gap-1.5 text-xs transition-colors"
+          className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
         >
-          <Search className="size-3" />
+          <Search className="size-3.5" />
           Research
         </Link>
       </div>
 
       {emails.length === 0 ? (
-        <div className="border-border bg-card rounded-(--card-radius) border py-16 text-center">
+        <Card className="py-16 text-center">
           <div className="bg-muted/50 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
             <Mail className="text-muted-foreground size-5" />
           </div>
@@ -135,11 +133,11 @@ export function SentEmailsPage({ emails }: { emails: SentEmail[] }) {
               Start Researching
             </Link>
           </Button>
-        </div>
+        </Card>
       ) : (
         <div className="flex gap-4">
           {/* Email list */}
-          <div className="bg-card border-border w-full shrink-0 overflow-hidden rounded-lg border md:w-3/5">
+          <Card className="w-full shrink-0 !gap-0 !py-0 md:w-3/5">
             {emails.map((email) => (
               <button
                 key={email.id}
@@ -184,10 +182,10 @@ export function SentEmailsPage({ emails }: { emails: SentEmail[] }) {
                 </div>
               </button>
             ))}
-          </div>
+          </Card>
 
           {/* Desktop email preview */}
-          <div className="bg-card border-border hidden min-h-[400px] flex-1 flex-col rounded-lg border md:flex">
+          <Card className="hidden min-h-[400px] flex-1 flex-col !gap-0 !py-0 md:flex">
             {selected ? (
               <EmailDetailContent email={selected} />
             ) : (
@@ -195,7 +193,7 @@ export function SentEmailsPage({ emails }: { emails: SentEmail[] }) {
                 Select an email to preview
               </div>
             )}
-          </div>
+          </Card>
 
           {/* Mobile email detail sheet */}
           <MobileEmailSheet email={selected} onClose={() => setSelectedId(null)} />

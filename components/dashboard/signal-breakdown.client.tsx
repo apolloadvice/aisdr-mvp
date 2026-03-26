@@ -13,7 +13,7 @@ export function SignalBreakdown({ signals }: { signals: Signal[] }) {
   const max = signals.length > 0 ? signals[0].count : 1;
 
   return (
-    <div className="bg-card border-border rounded-(--card-radius) border p-5">
+    <div className="bg-card rounded-(--card-radius) px-[var(--density-card-px)] py-[var(--density-card-py)] shadow-xs">
       <h3 className="text-foreground text-sm font-medium">Top Buying Signals</h3>
       <p className="section-label text-muted-foreground mt-0.5 mb-5">Across all research</p>
       {signals.length === 0 ? (

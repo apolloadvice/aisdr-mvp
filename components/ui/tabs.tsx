@@ -26,7 +26,7 @@ const tabsListVariants = cva(
   {
     variants: {
       variant: {
-        default: 'rounded-lg border border-border bg-card p-1 gap-1',
+        default: 'rounded-[var(--card-radius)] bg-card p-1 gap-1 shadow-xs',
         line: 'gap-1 rounded-none bg-transparent'
       }
     },

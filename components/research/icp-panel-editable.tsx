@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Card } from '@/components/ui/card';
 import type { ICPCriteria } from '@/lib/types';
 
 type TagColor = 'primary' | 'secondary' | 'accent-secondary' | 'accent-tertiary';
@@ -114,7 +115,7 @@ export function IcpPanelEditable({
   };
 
   return (
-    <div className="border-border bg-card overflow-hidden rounded-[var(--card-radius)] border">
+    <Card className="!gap-0 !py-0">
       {header && (
         <div className="bg-muted/50 border-border flex items-center justify-between border-b px-4 py-2.5">
           {header}
@@ -218,6 +219,6 @@ export function IcpPanelEditable({
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

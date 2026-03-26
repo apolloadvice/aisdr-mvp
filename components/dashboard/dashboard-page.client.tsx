@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Search, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Pipeline } from './pipeline.client';
 import { WeeklyChart } from './weekly-chart.client';
 import { SignalBreakdown } from './signal-breakdown.client';
@@ -20,7 +21,7 @@ interface DashboardPageProps {
 
 function EmptyDashboard() {
   return (
-    <div className="border-border bg-card rounded-(--card-radius) border py-16 text-center">
+    <Card className="py-16 text-center">
       <p className="text-foreground mb-1 text-sm font-medium">No activity yet</p>
       <p className="text-muted-foreground mx-auto mb-5 max-w-xs text-sm">
         Start researching companies to see your pipeline stats here.
@@ -31,7 +32,7 @@ function EmptyDashboard() {
           Start Researching
         </Link>
       </Button>
-    </div>
+    </Card>
   );
 }
 
@@ -45,24 +46,24 @@ export function DashboardPage({
 
   return (
     <div className={`mx-auto ${MAX_WIDTH} px-4 py-10 md:px-6`}>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-8 flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-foreground text-lg font-semibold">Dashboard</h1>
-          <p className="text-muted-foreground text-xs">Your outreach pipeline at a glance</p>
+          <h1 className="text-foreground text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Your outreach pipeline at a glance</p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href="/research"
-            className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-xs transition-colors"
+            className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
           >
-            <Search className="size-3" />
+            <Search className="size-3.5" />
             Research
           </Link>
           <Link
             href="/emails"
-            className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-xs transition-colors"
+            className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
           >
-            <Mail className="size-3" />
+            <Mail className="size-3.5" />
             Emails
           </Link>
         </div>

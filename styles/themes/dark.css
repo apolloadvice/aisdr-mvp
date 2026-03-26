@@ -38,10 +38,10 @@
   --text-muted: 0.48 0.005 65;
   --text-inverse: 0.14 0.005 70;
 
-  /* Deep warm shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.6);
+  /* Deep warm elevations */
+  --elevation-sm: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --elevation-md: 0 6px 20px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --elevation-lg: 0 14px 36px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.35);
 
   /* Tag tokens — matching light */
   --tag-radius: 4px;
@@ -56,13 +56,31 @@
 
   /* Card style tokens */
   --card-radius: 8px;
-  --card-border-width: 1px;
-  --card-border-opacity: 0.4;
+  --card-border-width: 0px;
+  --card-border-opacity: 0;
   --card-shadow: none;
-  --card-hover-shadow: var(--shadow-md);
+  --card-hover-shadow: var(--elevation-md);
   --card-hover-y: -1px;
   --card-accent-bar-height: 0px;
   --card-accent-bar-scale: 0;
+
+  /* Density tokens — information density */
+  --density-card-py: 1.5rem;
+  --density-card-px: 1.5rem;
+  --density-card-gap: 1.5rem;
+  --density-section-gap: 0.75rem;
+
+  /* Font size scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+
+  /* Input/form tokens */
+  --input-radius: 0.375rem;
+  --input-border-width: 0px;
+
+  /* Button shape */
+  --button-radius: 0.375rem;
 
   /* Header & bottom nav — solid dark, warm border */
   --header-bg: #1a1918;

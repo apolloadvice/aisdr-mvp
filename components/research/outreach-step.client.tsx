@@ -12,6 +12,7 @@ import {
 import { EmailEditorInline } from './email-editor-inline.client';
 import { BulkSendDialog } from './bulk-send-dialog.client';
 import { useResearchStore } from '@/lib/store/research-store';
+import { Card } from '@/components/ui/card';
 import type {
   CompanyResult,
   ComposeEmailParams,
@@ -196,7 +197,7 @@ export function OutreachStep() {
   return (
     <div className="flex flex-col gap-4 md:flex-row" style={{ minHeight: 'min(600px, 70vh)' }}>
       {/* Contact sidebar */}
-      <div className="border-border bg-card w-full shrink-0 overflow-y-auto rounded-(--card-radius) border md:w-72 lg:w-80">
+      <Card className="w-full shrink-0 !gap-0 overflow-y-auto !py-0 md:w-72 lg:w-80">
         <div className="border-border flex items-center gap-1 border-b px-4 py-3">
           <p className="text-xs font-medium">
             {selectedKeys.size}/{MAX_SELECTED} selected
@@ -334,10 +335,10 @@ export function OutreachStep() {
             );
           })}
         </Accordion>
-      </div>
+      </Card>
 
       {/* Email editor with tabs */}
-      <div className="border-border bg-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-(--card-radius) border">
+      <Card className="min-h-0 flex-1 !gap-0 !py-0">
         {/* Tabs */}
         {selectedContacts.length > 0 && (
           <div className="border-border flex shrink-0 gap-0 overflow-x-auto border-b">
@@ -374,7 +375,7 @@ export function OutreachStep() {
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       <BulkSendDialog
         open={bulkSendOpen}

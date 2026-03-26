@@ -76,7 +76,7 @@ function ICPSummary({ icp, onEditCriteria }: { icp: ICPCriteria; onEditCriteria?
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-card border-border mb-6 rounded-lg border">
+    <Card className="mb-6 !gap-0 !py-0">
       <button
         onClick={() => setExpanded(!expanded)}
         className="flex w-full items-center gap-3 px-4 py-3 text-left"
@@ -165,7 +165,7 @@ function ICPSummary({ icp, onEditCriteria }: { icp: ICPCriteria; onEditCriteria?
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -330,7 +330,7 @@ export function ResultsStep() {
             />
           )}
 
-          <div className="border-border bg-card overflow-x-auto rounded-(--card-radius) border lg:overflow-x-auto">
+          <Card className="!gap-0 overflow-x-auto !py-0 lg:overflow-x-auto">
             <div className={`bg-muted/50 border-border hidden ${GRID_COLS} border-b lg:grid`}>
               {['Company', 'Target Person', 'Buying Signal', 'Overview & Fit'].map(
                 (label, i, arr) => (
@@ -371,7 +371,7 @@ export function ResultsStep() {
                 />
               );
             })}
-          </div>
+          </Card>
         </div>
       )}
 

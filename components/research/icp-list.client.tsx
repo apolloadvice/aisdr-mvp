@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { IcpPanelEditable } from './icp-panel-editable';
 import { createSession, deleteICP, updateICP, createICP, parseICP } from '@/lib/api';
@@ -275,7 +276,7 @@ function CreateICPModal({
             {error && <p className="text-destructive px-6 pt-3 text-sm">{error}</p>}
 
             <div className="p-6">
-              <div className="border-border bg-card overflow-hidden rounded-[var(--card-radius)] border">
+              <Card className="!gap-0 !py-0">
                 <div className="bg-muted/50 border-border flex items-center justify-between border-b px-4 py-2.5">
                   <span className="text-muted-foreground section-label">Customer Profile</span>
                   {description.trim() && (
@@ -316,7 +317,7 @@ function CreateICPModal({
                     Try an example
                   </Button>
                 </div>
-              </div>
+              </Card>
             </div>
 
             <div className="border-border flex items-center justify-end border-t px-6 py-4">
@@ -468,13 +469,13 @@ export function ICPList({ icps: initialICPs }: { icps: SavedICP[] }) {
       />
 
       {icps.length === 0 ? (
-        <div className="border-border bg-card rounded-[var(--card-radius)] border py-16 text-center">
+        <Card className="py-16 text-center">
           <p className="text-muted-foreground text-sm">
             No saved profiles yet. Create one above or save from the strategy step during research.
           </p>
-        </div>
+        </Card>
       ) : (
-        <div className="border-border bg-card overflow-hidden rounded-[var(--card-radius)] border">
+        <Card className="!gap-0 !py-0">
           {icps.map((icp) => (
             <ICPRow
               key={icp.id}
@@ -486,7 +487,7 @@ export function ICPList({ icps: initialICPs }: { icps: SavedICP[] }) {
               isUsing={usingId === icp.id}
             />
           ))}
-        </div>
+        </Card>
       )}
     </>
   );

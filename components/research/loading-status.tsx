@@ -1,4 +1,5 @@
 import { Search, Building2, Users, Zap, Mail } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 const LOADING_STAGES = [
   { icon: Search, label: 'Searching for companies...' },
@@ -21,7 +22,7 @@ export function LoadingStatus({
   const CurrentIcon = stage?.icon ?? Search;
 
   return (
-    <div className="bg-card border-border mb-6 overflow-hidden rounded-lg border">
+    <Card className="mb-6 !gap-0 !py-0">
       <div className="relative px-4 py-4">
         <div className="bg-muted absolute inset-x-0 bottom-0 h-0.5">
           <div className="bg-primary h-full w-1/3 animate-[shimmer_2s_ease-in-out_infinite] rounded-full" />
@@ -37,6 +38,6 @@ export function LoadingStatus({
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
