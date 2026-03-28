@@ -60,19 +60,21 @@ Strategy
 EMAIL 1 — The Signal-Based Opener
 Goal: Demonstrate you've done research. Connect an observed signal to a relevant pain point. Introduce the product as a natural fit — not a pitch.
 Subject line: 4-8 words, lowercase or sentence case (never Title Case), feels like an internal email, can be a question, relates to the signal NOT the product name.
-Body: Open with the signal (what you observed about their company); keep this to 1 sentence with the relevant content with the signal. Bridge to the pain point. Introduce the product as a natural way to address that challenge — ONE sentence. Include exactly ONE proof point with specific numbers framed as a story. End with a question that's easy to answer or a soft offer — NOT a meeting request.
-Length: 60-80 words in the body (excluding greeting and sign-off).
+Body: Open with the signal (what you observed about their company)- strictly keep this to 1 sentence with the relevant content with the signal and bridge to the pain point. In the next paragraph, introduce the product as a natural way to address that challenge — ONE sentence. Include exactly ONE proof point with specific numbers framed as a story. End with a soft offer in 1 sentence — NOT a meeting request. 3 short paragraphs is the absolute maximum 
+Examples of a soft offer to use: "Happy to walk through it if that's helpful.", "Happy to connect if this is relevant.", "Worth a conversation?"
+Length: Strictly 60-80 words in the body (excluding greeting and sign-off). 
 Include greeting (Hey ${prospectFirst},) and sign-off (Best, ${sender}).
 
 EMAIL 2 — The Bump
 Goal: Quick nudge. Different angle. Create curiosity without pressure.
 Subject line: "Re: [Email 1 subject]" to thread it.
-Body: Open with "Hey ${prospectFirst} —". Keep it under 45 words total. Do NOT repeat the angle or proof point from Email 1. Mention 1-2 customer names casually (not full case study details). Do NOT pitch the product from scratch — assume they saw Email 1. End naturally with a soft offer. No meeting ask. Casual, one short paragraph.
+Body: Open with "Hey ${prospectFirst} —". Keep it strictly under 45 words total. Do NOT repeat the angle or proof point from Email 1. Mention 1-2 customer names casually (not full case study details). Do NOT pitch the product from scratch — assume they saw Email 1. End naturally with a soft offer. No meeting ask. Casual, one short paragraph.
+Example of first sentence: "Did this land on your radar?"
 
 EMAIL 3 — The New Angle
 Goal: Try a completely different value prop. Make it feel like a fresh thought, not a desperate follow-up.
 Subject line: "Re: [Email 1 subject]" to thread it.
-Body: Open with "Hey ${prospectFirst},". Use a DIFFERENT angle than Emails 1 and 2. Use a DIFFERENT proof point than Emails 1 and 2. Keep it under 60 words. 2-3 sentences max. End with a simple, easy-to-answer question — not a meeting ask. Tone: brief, helpful, genuinely curious.
+Body: Open with "Hey ${prospectFirst},". Use a DIFFERENT angle than Emails 1 and 2. Use a DIFFERENT proof point than Emails 1 and 2. Do not say "new angle" or "one more angle." Keep it under 60 words. 2-3 sentences max. End with a simple, easy-to-answer question — not a meeting ask. Tone: brief, helpful, genuinely curious.
 Include sign-off (Best, ${sender}).
 
 OUTPUT FORMAT
@@ -83,10 +85,12 @@ QUALITY CHECKLIST (verify before returning)
 - Email 1 subject is 4-8 words, lowercase/sentence case, no product name
 - Email 1 opens with the prospect's world, not the product
 - Email 1 has exactly ONE proof point with specific numbers
-- Email 1 is 60-80 words (body only, excluding greeting/sign-off)
-- Email 2 is under 45 words, different angle than Email 1
-- Email 3 is under 60 words, different angle AND proof point than Emails 1 and 2
-- No email asks for a meeting or call
+- Email 1 is strictly 60-80 words (body only, excluding greeting/sign-off)
+- Email 1 ends with one of the soft offers listed.
+- Email 2 is strictly under 45 words, different angle than Email 1 AND has customer proof points (not full details)
+- Email 3 is strictly under 60 words, different angle AND proof point than Emails 1 and 2
+- Email 3 does not have the word "angle" in it
+- No email asks for a meeting or call - only soft offers.
 - No bullet points, bold, or HTML formatting in any email
 - Each email uses a different proof point
 - No jargon-stacking or salesy phrases
